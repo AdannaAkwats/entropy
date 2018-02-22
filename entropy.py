@@ -24,6 +24,9 @@ def vonNeumann(A):
 
     return -sum
 
+# Returns true if vonNeumann entropy >= 0
+def isNonNegVN(A):
+    return vonNeumann(A) >= 0
 
 # Generate random unitary matrix
 def Unitary(n):
@@ -35,7 +38,7 @@ def Unitary(n):
     k = 0
     for i in range(n):
         for j in range(n):
-            X[i][j] = u_rand[k]
+            X[i,j] = u_rand[k]
             k += 1
 
     X /= math.sqrt(2)
