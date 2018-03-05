@@ -15,6 +15,7 @@ from entropy import generate
 from evolution import isEntropyConstant
 from evolution import u_p_u
 from partial_trace import separate
+from partial_trace import separate_qutrit
 from utils import isMatrixSame
 
 # Testing output...
@@ -55,17 +56,17 @@ def testSeparate(seps):
 
 # Generate random unitary matrix
 U,_,_ = Unitary(4)
-print U
+# print U
 # Generate random density matrix
-p = generate(4)
-# print p
+p = generate(9)
+print p
 print ""
 
 # Separate density matrix into several systems
-seps = separate(p)
+seps = separate_qutrit(p)
 for s in seps:
     print s
     print np.trace(s)
     print ""
 
-print isEntropyConstant(u_p_u, p, U)
+# print isEntropyConstant(u_p_u, p, U)
