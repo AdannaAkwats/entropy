@@ -48,7 +48,7 @@ def allocSub(p):
     """
     dim = p.shape[0]
     sub_dim = 0
-    
+
     if(isPowerof2(dim)): # qubit
         sub_dim = dim / 2
     elif(isPowerof3(dim)): # qutrit
@@ -56,6 +56,7 @@ def allocSub(p):
 
     # Error if sub_dim is still = 0
     if sub_dim == 0:
+        print "Error in Function 'allocSub in utils.py':"
         print "Density matrix dimension not power of 2 (qubit) or 3 (qutrit)"
 
     temp = np.zeros((sub_dim, sub_dim))
@@ -76,3 +77,12 @@ def isPowerof3(n):
     """
     # 3^19 = 1162261467
     return 1162261467 % n == 0;
+
+
+# Function that runs functions many times
+def testTrue(func, args, lim):
+    for i in range(lim):
+        print "test " + str(i)
+        if not func(args) :
+            return False
+    return True

@@ -3,9 +3,13 @@ from numpy import linalg as LA
 import math
 import random
 from shannon import randomProbabilityDist
+from partial_trace import separate
 
-# Calculate the Von Neumann Entropy of a quantum state
 def vonNeumann(A):
+    """
+    Calculate the Von Neumann Entropy of a quantum state
+    """
+
     # Get eigenvalues of A
     values, _ = LA.eig(A)
 
@@ -24,12 +28,35 @@ def vonNeumann(A):
 
     return -sum
 
-# Returns true if vonNeumann entropy >= 0
+
 def isNonNegVN(A):
+    """
+    Returns true if vonNeumann entropy >= 0
+    """
     return vonNeumann(A) >= 0
 
-# Generate random unitary matrix
+
+def strongSubadditivity_q(pABC):
+    """
+    Checks that strong subadditivity holds: H(A,B,C) + H(B) <= H(A, B) + H(B,c)
+    """
+
+    systems, joint_systems = separate(pABC)
+    pAB = joint_systems[0]
+    pBC = joint_systems[1]
+
+    H_ABC = vonNeumann(pABC)
+    H_AB = vonNeumann(pAB)
+    H_BC = vonNeumann(pBC)
+    H_B = vonNeumann(pB)
+
+    return H_ABC + H_B <= H_AB + H_BC
+
+
 def Unitary(n):
+    """
+    Generate random nxn unitary matrix
+    """
 
     # generate a random complex matrix
     temp = np.zeros((n,n))
@@ -58,9 +85,11 @@ def Unitary(n):
     return Q, Q_conj, I
 
 
-# Generate random A s.t A = UDU*, where D is diagonal, U is unitary matrix and
-# U* is conplex conjugate transpose of U
 def generate(n):
+    """
+    Generate random nxn matrix A s.t A = UDU*, where D is diagonal,
+    U is unitary matrix and U* is conplex conjugate transpose of U
+    """
 
     # Unitary matrix and its complex conjugate transpose
     U, U_conj, I = Unitary(n)
@@ -69,12 +98,14 @@ def generate(n):
     D = np.zeros((n,n))
     diag = randomProbabilityDist(n)
     for i in range(n):
-        D[i][i] = diag[i]
+        D[i,i] = diag[i]
 
     # A = UDU*
     D_mat = np.matrix(D)
     UD = np.matmul(U, D)
     # A = UDU*
     A = np.matmul(UD, U_conj)
+
+    A = A / np.trace(A)
 
     return A

@@ -2,25 +2,46 @@ import numpy as np
 from numpy import linalg as LA
 import math
 import random
+import sys
 from utils import isMatrixSame
 from utils import matrixInList
 from utils import allocSub
+from utils import isPowerof2
+from utils import isPowerof3
 
 # Class that cmputes partial trace in 2, 3 and 4 qubits
 # and 2,3 and 4 qutrits systems
 
-# Computes partial trace of density matrix (pure quantum system) p
-# Systems are saved in list systems
+# Separates joint pure quantum state p by comouting its partial trace
+# Separated Systems are saved in list systems i.e. pA, pB ...
 systems = []
 
+# Intermediate joint systems are stored i.e. pAB, pBC, pAC
+joint_systems = []
+print "sys"
+
 def separate(p):
+    """
+    Function that separates joint pure qubit quantum state p. The density matrix
+    width (and length) MUST be written as 2^q where q is the number of qubits
+    """
+
     dim = p.shape[0]
+
+    if(not isPowerof2(dim)):
+        print "Error in Function 'separate in partial_trace.py':"
+        print "Density matrix given is not a qubit system."
+        print "i.e. Width/Length of matrix is not in form 2^q."
+        sys.exit()
 
     # 2^q = dim, q is the number of qubits
     q = math.log(dim) / math.log(2)
 
     # p_AB 2 qubits
     if(q == 2):
+    #    print "here"
+        print "systems"
+        print systems
         # pA
         pA = allocSub(p)
         # dimensions of each sub matrix
@@ -50,10 +71,14 @@ def separate(p):
     elif(q == 4):
         __separate4(p)
 
-    return systems
+    return systems, joint_systems
 
-# Private method that calculates partial trace of 3 qubit systems
+
 def __separate3(p):
+    """
+    Private method that calculates partial trace of 3 qubit systems
+    """
+
 
     # pAB
     pAB = allocSub(p)
@@ -81,13 +106,21 @@ def __separate3(p):
             pBC[i,j] = p[x_BC[i],x_BC[j]] + p[y_BC[i],y_BC[j]]
             pAC[i,j] = p[x_AC[i],x_AC[j]] + p[y_AC[i],y_AC[j]]
 
+    # Storing intermediiate joint systems
+    joint_systems.append(pAB)
+    joint_systems.append(pBC)
+    joint_systems.append(pAC)
 
+    # Separate joint systems into single systems
     separate(pAB)
     separate(pBC)
     separate(pAC)
 
-# Private method that calculates separate systems for 4 qubit systems
+
 def __separate4(p):
+    """
+    Private method that calculates separate systems for 4 qubit systems
+    """
 
     # pABC
     pABC = allocSub(p)
@@ -123,7 +156,14 @@ def __separate4(p):
             pBCD[i,j] = p[x_BCD[i],x_BCD[j]] + p[y_BCD[i],y_BCD[j]]
             pACD[i,j] = p[x_ACD[i],x_ACD[j]] + p[y_ACD[i],y_ACD[j]]
 
+    # Storing intermediiate joint systems
+    joint_systems.append(pABC)
+    joint_systems.append(pABD)
+    joint_systems.append(pBCD)
+    joint_systems.append(pACD)
 
+
+    # Separate joint systems into single systems
     __separate3(pABC)
     __separate3(pABD)
     __separate3(pBCD)
@@ -133,8 +173,19 @@ def __separate4(p):
 
 # Separate qutrit <0|, <1|, <2|
 def separate_qutrit(p):
+    """
+    Function that separates joint pure qutrit quantum state p. The density
+    matrix width (and length) MUST be written as 3^q where q is the number
+    of qutrits
+    """
 
     dim = p.shape[0]
+
+    if(not isPowerof3(dim)):
+        print "Error in Function 'separate_qutrit in partial_trace.py':"
+        print "Density matrix given is not a qutrit system."
+        print "i.e. Width/Length of matrix is not in form 3^q."
+        sys.exit()
 
     # 3^q = dim, q is the number of qutrits
     q = math.log(dim) / math.log(3)
