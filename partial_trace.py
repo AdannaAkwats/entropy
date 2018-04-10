@@ -107,9 +107,9 @@ def __separate3(p):
             pAC[i,j] = p[x_AC[i],x_AC[j]] + p[y_AC[i],y_AC[j]]
 
     # Storing intermediiate joint systems
-    joint_systems.append(pAB)
-    joint_systems.append(pBC)
-    joint_systems.append(pAC)
+    # joint_systems.append(pAB)
+    # joint_systems.append(pBC)
+    # joint_systems.append(pAC)
 
     # Separate joint systems into single systems
     separate(pAB)
@@ -128,26 +128,39 @@ def __separate4(p):
     # dimensions of each sub matrix
     sub_dim = pABC.shape[0]
 
-    x_ABC = [0,2,3,4,7,10,8,14]
-    y_ABC = [1,5,6,9,11,12,13,15]
+    x_ABC = [2*x for x in range(sub_dim)]
+    y_ABC = [2*x + 1 for x in range(sub_dim)]
 
     # pABD
     pABD = allocSub(p)
 
-    x_ABD = [0,1,3,4,6,9,8,13]
-    y_ABD = [2,5,7,10,11,12,14,15]
+    x_ABD = [0 for x in range(sub_dim)]
+
+    for i in range(sub_dim):
+        if(i != 0 && ((i%2) == 0)):
+            x_ABD[i] = x_ABD[i-1] + (2 + 1)
+        else:
+            x_ABD[i] = x_ABD[i-1] + 1
 
     # pBCD
     pBCD = allocSub(p)
 
-    x_BCD = [0,1,2,3,5,6,7,11]
-    y_BCD = [4,9,10,8,12,13,14,15]
+    x_BCD = [x for x in range(sub_dim)]
+    y_BCD = [x+sub_dim for x in range(sub_dim)]
 
     # pBCD
     pACD= allocSub(p)
 
     x_ACD = [0,1,2,4,5,9,10,12]
     y_ACD = [3,6,7,8,11,13,14,15]
+
+    x_ACD = [0 for x in range(sub_dim)]
+
+    for i in range(sub_dim):
+        if(i != 0 && ((i%4) == 0)):
+            x_ACD[i] = x_ACD[i-1] + (2*2 + 1)
+        else:
+            x_ACD[i] = x_ACD[i-1] + 1
 
     for i in range(sub_dim):
         for j in range(sub_dim):
@@ -157,10 +170,10 @@ def __separate4(p):
             pACD[i,j] = p[x_ACD[i],x_ACD[j]] + p[y_ACD[i],y_ACD[j]]
 
     # Storing intermediiate joint systems
-    joint_systems.append(pABC)
-    joint_systems.append(pABD)
-    joint_systems.append(pBCD)
-    joint_systems.append(pACD)
+    # joint_systems.append(pABC)
+    # joint_systems.append(pABD)
+    # joint_systems.append(pBCD)
+    # joint_systems.append(pACD)
 
 
     # Separate joint systems into single systems
@@ -184,7 +197,7 @@ def separate_qutrit(p):
     if(not isPowerof3(dim)):
         print "Error in Function 'separate_qutrit in partial_trace.py':"
         print "Density matrix given is not a qutrit system."
-        print "i.e. Width/Length of matrix is not in form 3^q."
+        print "i.e. Width and Length of matrix is not in form 3^q."
         sys.exit()
 
     # 3^q = dim, q is the number of qutrits
@@ -196,16 +209,17 @@ def separate_qutrit(p):
         pA = allocSub(p)
         # dimensions of each sub matrix
         sub_dim = pA.shape[0]
-        x_A = [0,3,6]
-        y_A = [1,4,7]
-        z_A = [2,5,8]
+
+        x_A = [3*x for x in range(sub_dim)]
+        y_A = [3*x + 1 for x in range(sub_dim)]
+        z_A = [3*x + 2 for x in range(sub_dim)]
 
         # pB
         pB = allocSub(p)
 
-        x_B = [0,1,2]
-        y_B = [3,4,5]
-        z_B = [6,7,8]
+        x_B = [x for x in range(sub_dim)]
+        y_B = [x+sub_dim for x in range(sub_dim)]
+        z_B = [x+2*sub_dim for x in range(sub_dim)]
 
         for i in range(sub_dim):
             for j in range(sub_dim):
@@ -218,9 +232,101 @@ def separate_qutrit(p):
             systems.append(pB)
 
     # p_ABC 3 qutrits
-    # elif(q == 3):
-    #     __separate3_qutrit(p)
-    # elif(q == 4):
-    #     __separate4_qutrit(p)
+    elif(q == 3):
+        __separate3_qutrit(p)
+    elif(q == 4):
+        __separate4_qutrit(p)
 
     return systems
+
+
+def __separate3_qutrit(p):
+    """
+    Private method that calculates separate systems for 3 qutrit systems
+    """
+
+    #pAB
+    pAB = allocSub(p)
+
+    # dimensions of each sub matrix
+    sub_dim = pAB.shape[0]
+    x_AB = [3*x for x in range(sub_dim)]
+    y_AB = [3*x + 1 for x in range(sub_dim)]
+    z_AB = [3*x + 2 for x in range(sub_dim)]
+
+    # pBC
+    pBC = allocSub(p)
+
+    x_BC = [x for x in range(sub_dim)]
+    y_BC = [x+sub_dim for x in range(sub_dim)]
+    z_BC = [x+2*sub_dim for x in range(sub_dim)]
+
+    # pAC
+    pAC = allocSub(p)
+
+    x_AC = [0 for x in range(sub_dim)]
+
+    for i in range(sub_dim):
+        if(i != 0 && ((i%3) == 0)):
+            x_AC[i] = x_AC[i-1] + (3*2 + 1)
+        else:
+            x_AC[i] = x_AC[i-1] + 1
+
+    y_AC = [x+3 for x in x_AC]
+    z_AC = [x+3 for x in y_AC]
+
+    for i in range(sub_dim):
+        for j in range(sub_dim):
+            pAB[i,j] = p[x_AB[i],x_AB[j]] + p[y_AB[i],y_AB[j]] + p[z_AB[i],z_AB[j]]
+            pBC[i,j] = p[x_BC[i],x_BC[j]] + p[y_BC[i],y_BC[j]] + p[z_BC[i],z_BC[j]]
+            pAC[i,j] = p[x_AC[i],x_AC[j]] + p[y_AC[i],y_AC[j]] + p[z_AC[i],z_AC[j]]
+
+    separate(pAB)
+    separate(pBC)
+    separate(pAC)
+
+
+def __separate4_qutrit(p):
+    """
+    Private method that calculates separate systems for 4 qutrit systems
+    """
+
+    #pABC
+    pABC = allocSub(p)
+    sub_dim = pABC.shape[0]
+    x_ABC = [3*x for x in range(sub_dim)]
+    y_ABC = [3*x + 1 for x in range(sub_dim)]
+    z_ABC = [3*x + 2 for x in range(sub_dim)]
+
+    #pABD
+    pABD = allocSub(p)
+    x_ABD = [0 for x in range(sub_dim)]
+
+    for i in range(sub_dim):
+        if(i != 0 && ((i%3) == 0)):
+            x_ABD[i] = x_ABD[i-1] + (3*2 + 1)
+        else:
+            x_ABD[i] = x_ABD[i-1] + 1
+
+    y_ABD = [x+3 for x in x_ABD]
+    z_ABD = [x+3 for x in y_ABD]
+
+
+    #pBCD
+    pBCD = allocSub(p)
+    x_BCD = [x for x in range(sub_dim)]
+    y_BCD = [x+sub_dim for x in range(sub_dim)]
+    z_BCD = [x+2*sub_dim for x in range(sub_dim)]
+
+    #pACD
+    pACD = allocSub(p)
+    x_ACD = [0 for x in range(sub_dim)]
+
+    for i in range(sub_dim):
+        if(i != 0 && ((i%9) == 0)):
+            x_ABD[i] = x_ABD[i-1] + (9*2 + 1)
+        else:
+            x_ABD[i] = x_ABD[i-1] + 1
+
+    y_ACD = [x+9 for x in x_ACD]
+    z_ACD = [x+9 for x in y_ACD]
