@@ -1,13 +1,16 @@
+from __future__ import division
 import numpy as np
 import numpy.matlib
-from numpy import linalg as LA
 import math
 import random
+import sys
+from numpy import linalg as LA
 from entropy import Unitary
 from entropy import vonNeumann
 from utils import isclose
 from utils import isPowerof2
 from utils import isPowerof3
+from utils import isMatrixSame
 
 
 # Unitary Evolution
@@ -70,6 +73,11 @@ def bit_flip_channel(Q, prob):
     The bit flip channel flips the state of a qubit from 0 to 1 and vice versa
     with probability 1 - prob
     """
+    dim = Q.shape[0]
+    if(dim != 2):
+        print "Error in Function 'bit_phase_flip_channel in evolution.py':"
+        print "Density matrix given is not a 2 by 2 matrix."
+        sys.exit()
 
     I = np.matlib.identity(2)
     E_0 = math.sqrt(prob) * I
@@ -90,6 +98,11 @@ def phase_flip_channel(Q, prob):
     """
     The phase flip channel changes the phase of the state of the qubit
     """
+    dim = Q.shape[0]
+    if(dim != 2):
+        print "Error in Function 'bit_phase_flip_channel in evolution.py':"
+        print "Density matrix given is not a 2 by 2 matrix."
+        sys.exit()
 
     I = np.matlib.identity(2)
     E_0 = math.sqrt(prob) * I
@@ -118,10 +131,18 @@ def bit_phase_flip_channel(Q, prob):
     This is a combination of a phase flip and a bit flip
     """
 
+    dim = Q.shape[0]
+    if(dim != 2):
+        print "Error in Function 'bit_phase_flip_channel in evolution.py':"
+        print "Density matrix given is not a 2 by 2 matrix."
+        sys.exit()
+
+
     I = np.matlib.identity(2)
     E_0 = math.sqrt(prob) * I
-    II = np.zeros((2,2))
-    II[1,0] = -1j
+    temp = np.zeros((2,2))
+    II = np.array(temp, dtype=np.complex128)
+    II[0,1] = -1j
     II[1,0] = 1j
     E_1 = math.sqrt(1-prob) * II
 
@@ -157,6 +178,7 @@ def isCPTPEntropyMore(op, p, prob):
     """
     # Evolve p
     evolved_p = op(p, prob)
+    print "evolved trace: " + str(np.trace(evolved_p))
     H_e = vonNeumann(evolved_p)
     print "H_e: " + str(H_e)
     H_p = vonNeumann(p)
@@ -164,8 +186,36 @@ def isCPTPEntropyMore(op, p, prob):
 
     return H_e >= H_p
 
+def isUnital(op, n):
+    """
+    Checks that quantum channel op is unital i.e op(I) = I, I being the identity
+    """
 
-# def is_CPTP(E):
-#     """
-#     Checks if operator E is completely positive and trace preserving
-#     """
+    I = np.matlib.identity(n)
+    prob = 0
+    for i in range(11):
+        E = op(I, prob)
+        if(not isMatrixSame(E, I)):
+            print E
+            return False
+        prob = prob + 0.1
+    return True
+
+
+def isCPTP(op, p):
+    """
+    Checks if quantum operator E is completely positive and trace preserving
+    """
+
+    # Check if evolved matrix is positive self definite and has trace = 1
+    prob = 0
+    for i in range(11):
+        E = op(p, prob)
+        eigvalues, _ = np.linalg.eig(E)
+        v = eigvalues.real
+        tr = np.trace(E).real
+        print tr
+        if(np.any(v < 0) or not isclose(tr,1.0)):
+            return False
+        prob = prob + 0.1
+    return True

@@ -4,6 +4,7 @@ import math
 import random
 from shannon import randomProbabilityDist
 from partial_trace import separate
+from utils import check_n_qubit
 
 def vonNeumann(A):
     """
@@ -12,19 +13,18 @@ def vonNeumann(A):
 
     # Get eigenvalues of A
     values, _ = LA.eig(A)
+    values = values.real
 
     # Take the natural logarithm of the eigenvalues and sum them
     sum = 0
     for v in values:
-        l = 0
-        if(v == 0) :
-            l = 0
-        else:
+        log_p = 0
+        if(v != 0) :
             try:
-                l = math.log(v)
+                log_p = math.log(v,2)
             except ValueError:
                 print "(The matrix is not a quantum state!)"
-        sum += l
+        sum += (v*log_p)
 
     return -sum
 
@@ -35,15 +35,38 @@ def isNonNegVN(A):
     """
     return vonNeumann(A) >= 0
 
+def weakSubadditivity(pAB):
+    """
+    Checks that weak subadditivity holds: H(A,B) <= H(A) + H(B)
+    (2 qubit system)
+    """
+
+    # Ensure that system is a 3 qubit quantum system
+    check_n_qubit(pAB, 2)
+
+    systems, _ = separate(pAB)
+    pA = systems[0]
+    pB = systems[1]
+    H_A = vonNeumann(pA)
+    H_B = vonNeumann(pB)
+    H_AB = vonNeumann(pAB)
+
+    return H_AB <= H_A + H_B
+
 
 def strongSubadditivity_q(pABC):
     """
-    Checks that strong subadditivity holds: H(A,B,C) + H(B) <= H(A, B) + H(B,c)
+    Checks that strong subadditivity holds: H(A,B,C) + H(B) <= H(A, B)
+    + H(B,C) (3 qubit system)
     """
+
+    # Ensure that system is a 3 qubit quantum system
+    check_n_qubit(pABC, 3)
 
     systems, joint_systems = separate(pABC)
     pAB = joint_systems[0]
     pBC = joint_systems[1]
+    pB = systems[1]
 
     H_ABC = vonNeumann(pABC)
     H_AB = vonNeumann(pAB)

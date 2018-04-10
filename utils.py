@@ -2,6 +2,7 @@ import numpy as np
 from numpy import linalg as LA
 import math
 import random
+import sys
 
 
 def isMatrixSame(A, B):
@@ -79,10 +80,31 @@ def isPowerof3(n):
     return 1162261467 % n == 0;
 
 
-# Function that runs functions many times
+def check_n_qubit(p,n):
+    """
+    Ensures quantum system p is a n qubit quantum state
+    """
+    dim = p.shape[0]
+    if(dim != 2**n):
+        print "Error in Function 'check_n_qubit in utils.py':"
+        print "Quantum system is not a " + str(n) + " qubit system"
+        sys.exit()
+
+
 def testTrue(func, args, lim):
+    """
+    Function that runs functions many times
+    """
     for i in range(lim):
-        print "test " + str(i)
         if not func(args) :
             return False
     return True
+
+
+def getCombinations(A, n):
+    """
+    Function that returns all the 'n' digit combinations of values in array A
+    """
+
+
+# def __getCombinations_helper()

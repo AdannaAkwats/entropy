@@ -13,6 +13,7 @@ from shannon import strongSubadditivity
 from entropy import Unitary
 from entropy import generate
 from entropy import strongSubadditivity_q
+from entropy import weakSubadditivity
 from evolution import isEntropyConstant
 from evolution import u_p_u
 from evolution import isCPTPEntropyMore
@@ -20,9 +21,12 @@ from evolution import depolarising_channel
 from evolution import bit_flip_channel
 from evolution import phase_flip_channel
 from evolution import bit_phase_flip_channel
+from evolution import isUnital
+from evolution import isCPTP
 from partial_trace import separate
 from partial_trace import separate_qutrit
 from utils import isMatrixSame
+from utils import testTrue
 
 
 
@@ -43,28 +47,46 @@ def testSeparate(seps):
 
 
 # Generate random unitary matrix
-U,_,_ = Unitary(4)
+U,_,_ = Unitary(2)
 # print U
 # Generate random density matrix
-p = generate(2)
+p = generate(4)
 print p
 print ""
 print np.trace(p)
 print ""
-E = phase_flip_channel(p, 0.5)
-print E
-print np.trace(E)
-I =  np.zeros((2,2))
-I[0,0] = 1
-I[1,1] = 1
-E_I = phase_flip_channel(I, 0.5)
-print E_I
-print isCPTPEntropyMore(phase_flip_channel, p, 0.5)
+# E = phase_flip_channel(p, 0.5)
+# print E
+# print np.trace(E)
+# I =  np.zeros((2,2))
+# I[0,0] = 1
+# I[1,1] = 1
+# E_I = phase_flip_channel(I, 0.5)
+# print E_I
+# print isCPTPEntropyMore(phase_flip_channel, p, 0.5)
 
 
 
 # Separate density matrix into several systems
-#seps,_ = separate(p)
+seps, j= separate(p)
+for s in seps:
+    print s
+    print ""
+    print np.trace(s)
+
+
+# print testTrue(strongSubadditivity_q, p, 100)
+I =  np.zeros((2,2))
+I[0,0] = 1
+I[1,1] = 1
+#print isUnital(bit_phase_flip_channel, 2)
+# E_I = depolarising_channel(I, 0.5)
+# print E_I
+print isCPTPEntropyMore(bit_flip_channel, p, 1)
+# print isCPTP(depolarising_channel,p)
+# print isUnital(depolarising_channel, 2)
+
+
 
 #testTrue(strongSubadditivity_q, p, 1)
 
