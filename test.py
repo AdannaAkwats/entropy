@@ -10,10 +10,16 @@ from shannon import subadditivity
 from shannon import getPxPy
 from shannon import getPxPyPz
 from shannon import strongSubadditivity
+from entropy import vonNeumann
 from entropy import Unitary
 from entropy import generate
+from entropy import generate_unitary
 from entropy import strongSubadditivity_q
 from entropy import weakSubadditivity
+from entropy import generate_pure_state
+from entropy import relative_entropy
+from entropy import monotocity_relative_entropy
+from entropy import is_non_neg_relative_entropy
 from evolution import isEntropyConstant
 from evolution import u_p_u
 from evolution import isCPTPEntropyMore
@@ -22,7 +28,7 @@ from evolution import bit_flip_channel
 from evolution import phase_flip_channel
 from evolution import bit_phase_flip_channel
 from evolution import isUnital
-from evolution import isCPTP
+from evolution import isPTP
 from partial_trace import separate
 from partial_trace import separate_qutrit
 from utils import isMatrixSame
@@ -55,6 +61,12 @@ print p
 print ""
 print np.trace(p)
 print ""
+
+#generate_unitary(2)
+print generate_pure_state(4,2)
+
+
+
 # E = phase_flip_channel(p, 0.5)
 # print E
 # print np.trace(E)
@@ -65,24 +77,25 @@ print ""
 # print E_I
 # print isCPTPEntropyMore(phase_flip_channel, p, 0.5)
 
+# generate_2qubit_pure_state(2)
 
 
 # Separate density matrix into several systems
-seps, j= separate(p)
-for s in seps:
-    print s
-    print ""
-    print np.trace(s)
+# seps, j= separate(p)
+# for s in seps:
+#     print s
+#     print ""
+#     print np.trace(s)
 
 
 # print testTrue(strongSubadditivity_q, p, 100)
-I =  np.zeros((2,2))
-I[0,0] = 1
-I[1,1] = 1
+# I =  np.zeros((2,2))
+# I[0,0] = 1
+# I[1,1] = 1
 #print isUnital(bit_phase_flip_channel, 2)
 # E_I = depolarising_channel(I, 0.5)
 # print E_I
-print isCPTPEntropyMore(bit_flip_channel, p, 1)
+# print isCPTPEntropyMore(bit_flip_channel, p, 1)
 # print isCPTP(depolarising_channel,p)
 # print isUnital(depolarising_channel, 2)
 

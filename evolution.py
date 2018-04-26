@@ -202,9 +202,9 @@ def isUnital(op, n):
     return True
 
 
-def isCPTP(op, p):
+def isPTP(op, p):
     """
-    Checks if quantum operator E is completely positive and trace preserving
+    Checks if quantum operator E is positive and trace preserving
     """
 
     # Check if evolved matrix is positive self definite and has trace = 1

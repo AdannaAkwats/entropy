@@ -8,29 +8,27 @@ from utils import matrixInList
 from utils import allocSub
 from utils import isPowerof2
 from utils import isPowerof3
+from utils import check_power_of_dim
 
 # Class that cmputes partial trace in 2, 3 and 4 qubits
 # and 2,3 and 4 qutrits systems
 
 # Separates joint pure quantum state p by comouting its partial trace
-# Separated Systems are saved in list systems i.e. pA, pB ...
+# Separated Systems are saved in list systems iself.e. pA, pB ...
 systems = []
 
 # Intermediate joint systems are stored i.e. pAB, pBC, pAC
 joint_systems = []
 
-def separate(p):
+def separate(p, dim):
     """
     Top level function that calls separate_qubit and separate_qutrit
     to get single qubit and qutrit systems
     """
 
-    dim = p.shape[0]
-    if(not (isPowerof2(dim) or isPowerof3(dim))):
-        print "Error in Function 'separate in partial_trace.py':"
-        print "Density matrix given is neither a qubit or qutrit system."
-        print "i.e. Width and Length of matrix is not in form 2^q (qubit) or 3^q (qutrit)"
-        sys.exit()
+    n = p.shape[0]
+    n2 = p.shape[1]
+    q = check_power_of_dim(n, dim)
 
     if(isPowerof2(dim)):
         separate_qubit(p)

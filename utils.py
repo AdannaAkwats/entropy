@@ -90,6 +90,26 @@ def check_n_qubit(p,n):
         print "Quantum system is not a " + str(n) + " qubit system"
         sys.exit()
 
+def check_power_of_dim(n,dim,func_str):
+    """
+    Checks that density matrix dimentsion n = dim^q
+    If so, return number of qubits/qutrits...
+    If not, exit with error
+    """
+    m = math.log(n)
+    n = math.log(dim)
+    q = m / n
+
+    # Checks that q is an integer
+    if((m%n) == 0):
+        return q
+    else:
+        print "Error in Function '" + func_str +"':"
+        print "Density matrix given is neither a qubit or qutrit system."
+        print "i.e. Width and Length of matrix is not in form 2^q (qubit) or 3^q (qutrit)"
+        sys.exit()
+
+
 
 def testTrue(func, args, lim):
     """
