@@ -3,36 +3,11 @@ from numpy import linalg as LA
 import math
 import random
 
-from shannon import randomProbabilityDist
-from shannon import pxy
-from shannon import shannon
-from shannon import subadditivity
-from shannon import getPxPy
-from shannon import getPxPyPz
-from shannon import strongSubadditivity
-from entropy import vonNeumann
-from entropy import Unitary
-from entropy import generate
-from entropy import generate_unitary
-from entropy import strongSubadditivity_q
-from entropy import weakSubadditivity
-from entropy import generate_pure_state
-from entropy import relative_entropy
-from entropy import monotocity_relative_entropy
-from entropy import is_non_neg_relative_entropy
-from evolution import isEntropyConstant
-from evolution import u_p_u
-from evolution import isCPTPEntropyMore
-from evolution import depolarising_channel
-from evolution import bit_flip_channel
-from evolution import phase_flip_channel
-from evolution import bit_phase_flip_channel
-from evolution import isUnital
-from evolution import isPTP
-from partial_trace import separate
-from partial_trace import separate_qutrit
-from utils import isMatrixSame
-from utils import testTrue
+from shannon import *
+from entropy import *
+from evolution import *
+from partial_trace import *
+from utils import  *
 
 
 
@@ -51,57 +26,95 @@ def testSeparate(seps):
 
     return isMatrixSame(p, product)
 
-
+########### Generate matrices #########################
 # Generate random unitary matrix
-U,_,_ = Unitary(2)
+#U,_,_ = unitary(2)
+# #p = generate(2)
+# U = generate_unitary(2)
 # print U
+# print ""
+# is_unitary(U)
+# print ""
+
 # Generate random density matrix
-p = generate(4)
+# p = generate_pure_state(4,2)
+# print p
+# print ""
+# print np.trace(p)
+# print ""
+u = test_generate_unitary(2)
+print u
+print ""
+gg = generate2(2)
+print gg
+print ""
+print "fid " + str(fidelity(gg,gg))
+
+
+
+p = test_random_density_matrix(2)
 print p
+q =  generate(2)
+print q
+
+#################### Entropy inequalities ##############
+
+# 2 qubit systems
+# g = generate_pure_state(2,2)
+# r = generate(2)
+print "fidelity " + str(fidelity(q,q))
+# print vonNeumann(g)
+# print is_non_neg_VN(g)
+# print relative_entropy(g,r)
+# print is_non_neg_relative_entropy(g,r)
+# print conditional_entropy(g)
+# print monotocity_relative_entropy(g,r)
+# print mutual_information(g)
+# print weak_subadditivity(g)
+#
+# # 3 qubit system
+# y = generate(8)
+# print strongSubadditivity_q(y)
+#
+
 print ""
-print np.trace(p)
-print ""
 
-#generate_unitary(2)
-print generate_pure_state(4,2)
-
-
+#################### Evolution #########################
+#p = generate_pure_state(2,2)
+# is_CPTP_entropy_more(bit_flip_channel, p, 0.1)
+# is_CPTP_entropy_more(phase_flip_channel, p, 0.1)
+is_CPTP_entropy_more(bit_phase_flip_channel, p, 0.1)
+is_CPTP_entropy_more(depolarising_channel, p, 0.1)
+# print bit_flip_channel(p, 0.5)
+# print depolarising_channel(p,0.5)
+# print bit_phase_flip_channel(p,0.5)
 
 # E = phase_flip_channel(p, 0.5)
 # print E
 # print np.trace(E)
-# I =  np.zeros((2,2))
-# I[0,0] = 1
-# I[1,1] = 1
-# E_I = phase_flip_channel(I, 0.5)
+# I =  np.eye(2)
+# E_I = phase_flip_channel(I, 0.78)
 # print E_I
 # print isCPTPEntropyMore(phase_flip_channel, p, 0.5)
+#
+# I =  np.eye(2)
+# print is_unital(bit_phase_flip_channel, 2)
+# E_I = depolarising_channel(I, 0.5)
+# print E_I
+# print is_CPTP_entropy_more(bit_flip_channel, p, 1)
+# print is_PTP(depolarising_channel,p)
+# print is_unital(depolarising_channel, 2)
+# print is_entropy_constant(u_p_u, p, u)
 
-# generate_2qubit_pure_state(2)
 
 
+#################### Separation #########################
 # Separate density matrix into several systems
 # seps, j= separate(p)
 # for s in seps:
 #     print s
 #     print ""
 #     print np.trace(s)
-
-
-# print testTrue(strongSubadditivity_q, p, 100)
-# I =  np.zeros((2,2))
-# I[0,0] = 1
-# I[1,1] = 1
-#print isUnital(bit_phase_flip_channel, 2)
-# E_I = depolarising_channel(I, 0.5)
-# print E_I
-# print isCPTPEntropyMore(bit_flip_channel, p, 1)
-# print isCPTP(depolarising_channel,p)
-# print isUnital(depolarising_channel, 2)
-
-
-
-#testTrue(strongSubadditivity_q, p, 1)
 
 #j,seps = separate(p)
 # for s in seps:
@@ -111,6 +124,8 @@ print generate_pure_state(4,2)
 #     print sep
 #     #print np.trace(s)
 #     print ""
-#
-# print j
-# print isEntropyConstant(u_p_u, p, U)
+
+
+################## Test function multiple times ###########
+
+#testTrue(strongSubadditivity_q, p, 1)

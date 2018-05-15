@@ -92,23 +92,56 @@ def check_n_qubit(p,n):
 
 def check_power_of_dim(n,dim,func_str):
     """
-    Checks that density matrix dimentsion n = dim^q
-    If so, return number of qubits/qutrits...
+    n = side of matrix, dim = dimension of quantum state
+    Checks that density matrix dimension n = dim^q
+    If so, return number of qubits/qutrits/4-dim...
     If not, exit with error
     """
+
     m = math.log(n)
     n = math.log(dim)
     q = m / n
 
     # Checks that q is an integer
-    if((m%n) == 0):
+    if(q.is_integer()):
         return q
     else:
         print "Error in Function '" + func_str +"':"
-        print "Density matrix given is neither a qubit or qutrit system."
-        print "i.e. Width and Length of matrix is not in form 2^q (qubit) or 3^q (qutrit)"
+        print "Density matrix given is not a " + str(dim) +"-dim state"
+        print "i.e. Width and Length of matrix is not in form dim^q"
         sys.exit()
 
+def check_square_matrix(p,func_str):
+    """
+    Checks that the matrix p is square
+    """
+    p1 = p.shape[0]
+    p2 = p.shape[1]
+
+    if(p1 != p2):
+        print "Error in Function '" + func_str +"':"
+        print "Density matrix given is not square"
+        sys.exit()
+
+
+def check_same_size(p,r,func_str):
+    """
+    Checks that matrix p and r are both square and the same size
+    If it's not, exit with error
+    """
+    p1 = p.shape[0]
+    p2 = p.shape[1]
+    r1 = r.shape[0]
+    r2 = r.shape[1]
+
+    # Check that p and r are square
+    check_square_matrix(p,func_str)
+    check_square_matrix(r,func_str)
+
+    if((p1 != r1) or (p2 != r2)):
+        print "Error in Function '" + func_str +"':"
+        print "Density matrices size are not equal"
+        sys.exit()
 
 
 def testTrue(func, args, lim):
@@ -119,12 +152,3 @@ def testTrue(func, args, lim):
         if not func(args) :
             return False
     return True
-
-
-def getCombinations(A, n):
-    """
-    Function that returns all the 'n' digit combinations of values in array A
-    """
-
-
-# def __getCombinations_helper()

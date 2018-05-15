@@ -5,7 +5,7 @@ import math
 import random
 import sys
 from numpy import linalg as LA
-from entropy import Unitary
+from entropy import unitary
 from entropy import vonNeumann
 from utils import isclose
 from utils import isPowerof2
@@ -35,7 +35,7 @@ def u_p_u(U, p):
     return UpU_conj
 
 
-def dyn_evol_U(t, H):
+def time_evol_U(t, H):
     """
     Unitary dynamic evolution U = exp{iHt} where H = Hamitonian
     and t = time
@@ -154,7 +154,7 @@ def bit_phase_flip_channel(Q, prob):
     return E
 
 
-def isEntropyConstant(op, p, U):
+def is_entropy_constant(op, p, U):
     """
     Takes a function that evolves p (op) and checks if the entropy
     stays constant
@@ -171,7 +171,7 @@ def isEntropyConstant(op, p, U):
     return isclose(H_p, H_ev)
 
 
-def isCPTPEntropyMore(op, p, prob):
+def is_CPTP_entropy_more(op, p, prob):
     """
     Check that CPTP (Completely positve trace preserving)
     quantum operator obeys inequatlity H(E(p)) >= H(p)
@@ -179,14 +179,15 @@ def isCPTPEntropyMore(op, p, prob):
     # Evolve p
     evolved_p = op(p, prob)
     print "evolved trace: " + str(np.trace(evolved_p))
-    H_e = vonNeumann(evolved_p)
-    print "H_e: " + str(H_e)
     H_p = vonNeumann(p)
     print "H_p: " + str(H_p)
+    H_e = vonNeumann(evolved_p)
+    print "H_e: " + str(H_e)
+    print ""
 
     return H_e >= H_p
 
-def isUnital(op, n):
+def is_unital(op, n):
     """
     Checks that quantum channel op is unital i.e op(I) = I, I being the identity
     """
@@ -202,7 +203,7 @@ def isUnital(op, n):
     return True
 
 
-def isPTP(op, p):
+def is_PTP(op, p):
     """
     Checks if quantum operator E is positive and trace preserving
     """

@@ -3,12 +3,7 @@ from numpy import linalg as LA
 import math
 import random
 import sys
-from utils import isMatrixSame
-from utils import matrixInList
-from utils import allocSub
-from utils import isPowerof2
-from utils import isPowerof3
-from utils import check_power_of_dim
+from utils import *
 
 # Class that cmputes partial trace in 2, 3 and 4 qubits
 # and 2,3 and 4 qutrits systems
@@ -26,9 +21,13 @@ def separate(p, dim):
     to get single qubit and qutrit systems
     """
 
+    # Check matrix is square
+    check_square_matrix(p, "separate")
+
     n = p.shape[0]
     n2 = p.shape[1]
-    q = check_power_of_dim(n, dim)
+    func_str = "separate in partial_trace.py"
+    q = check_power_of_dim(n, dim, func_str)
 
     if(isPowerof2(dim)):
         separate_qubit(p)
