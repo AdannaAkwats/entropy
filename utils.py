@@ -80,14 +80,14 @@ def isPowerof3(n):
     return 1162261467 % n == 0;
 
 
-def check_n_qubit(p,n):
+def check_n_q(p, dim, n):
     """
-    Ensures quantum system p is a n qubit quantum state
+    Ensures quantum system p is a n qubit/qutrit quantum state
     """
-    dim = p.shape[0]
-    if(dim != 2**n):
-        print "Error in Function 'check_n_qubit in utils.py':"
-        print "Quantum system is not a " + str(n) + " qubit system"
+    d = p.shape[0]
+    if(d != dim**n):
+        print "Error in Function 'check_n_q in utils.py':"
+        print "Quantum system is not a " + str(n) + "-(" + str(dim) + "-dimensional)" + " quantum system"
         sys.exit()
 
 def check_power_of_dim(n,dim,func_str):
@@ -144,11 +144,16 @@ def check_same_size(p,r,func_str):
         sys.exit()
 
 
-def testTrue(func, args, lim):
+def test_true(func, *args):
     """
-    Function that runs functions many times
+    Function that runs function func many times and returns true if func returns
+    true lim amount of times
     """
+    l = len(args)
+    lim = args[l-1] # Last element of *args is the number of times to run func
+    func_args = args[0:l-1] # rest of arguments are the function arguments
+
     for i in range(lim):
-        if not func(args) :
+        if not func(*func_args) :
             return False
     return True

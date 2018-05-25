@@ -12,14 +12,23 @@ from utils import *
 # Separated Systems are saved in list systems iself.e. pA, pB ...
 systems = []
 
-# Intermediate joint systems are stored i.e. pAB, pBC, pAC
+# Intermediate joint systems are stored
+# Order for pABC:  pAB, pBC, pAC
+# Order for pABCD: pAB (0), pBC (1), pAC (2), pBD (3), pAD (4), pCD (5)
 joint_systems = []
+
+# Intermediate joint systems are stored
+# Order for pABCD: pABC (0), pABD (1), pBCD (2), pACD (3)
+joint_systems3 = []
+
 
 def separate(p, dim):
     """
     Top level function that calls separate_qubit and separate_qutrit
     to get single qubit and qutrit systems
+    dim = 2 if qubit, dim = 3 if qutrit
     """
+
 
     # Check matrix is square
     check_square_matrix(p, "separate")
@@ -34,7 +43,7 @@ def separate(p, dim):
     else:
         separate_qutrit(p)
 
-    return systems, joint_systems
+    return systems, joint_systems, joint_systems3
 
 
 def separate_qubit(p):
@@ -116,11 +125,11 @@ def __separate3(p):
             pAC[i,j] = p[x_AC[i],x_AC[j]] + p[y_AC[i],y_AC[j]]
 
     # Storing intermediiate joint systems
-    if(not matrixInList(pAB, systems)):
+    if(not matrixInList(pAB, joint_systems)):
         joint_systems.append(pAB)
-    if(not matrixInList(pBC, systems)):
+    if(not matrixInList(pBC, joint_systems)):
         joint_systems.append(pBC)
-    if(not matrixInList(pAC, systems)):
+    if(not matrixInList(pAC, joint_systems)):
         joint_systems.append(pAC)
 
     # Separate joint systems into single systems
@@ -179,14 +188,14 @@ def __separate4(p):
             pACD[i,j] = p[x_ACD[i],x_ACD[j]] + p[y_ACD[i],y_ACD[j]]
 
     # Storing intermediiate joint systems
-    if(not matrixInList(pABC, systems)):
-        joint_systems.append(pABC)
-    if(not matrixInList(pABD, systems)):
-        joint_systems.append(pABD)
-    if(not matrixInList(pBCD, systems)):
-        joint_systems.append(pBCD)
-    if(not matrixInList(pACD, systems)):
-        joint_systems.append(pACD)
+    if(not matrixInList(pABC, joint_systems3)):
+        joint_systems3.append(pABC)
+    if(not matrixInList(pABD, joint_systems3)):
+        joint_systems3.append(pABD)
+    if(not matrixInList(pBCD, joint_systems3)):
+        joint_systems3.append(pBCD)
+    if(not matrixInList(pACD, joint_systems3)):
+        joint_systems3.append(pACD)
 
     # Separate joint systems into single systems
     separate_qubit(pABC)
@@ -284,11 +293,11 @@ def __separate3_qutrit(p):
             pAC[i,j] = p[x_AC[i],x_AC[j]] + p[y_AC[i],y_AC[j]] + p[z_AC[i],z_AC[j]]
 
     # Storing intermediiate joint systems
-    if(not matrixInList(pAB, systems)):
+    if(not matrixInList(pAB, joint_systems)):
         joint_systems.append(pAB)
-    if(not matrixInList(pBC, systems)):
+    if(not matrixInList(pBC, joint_systems)):
         joint_systems.append(pBC)
-    if(not matrixInList(pAC, systems)):
+    if(not matrixInList(pAC, joint_systems)):
         joint_systems.append(pAC)
 
     # Recursively separate further
@@ -349,18 +358,18 @@ def __separate4_qutrit(p):
 
 
     # Storing intermediiate joint systems
-    if(not matrixInList(pABC, systems)):
-        joint_systems.append(pABC)
-    if(not matrixInList(pABD, systems)):
-        joint_systems.append(pABD)
-    if(not matrixInList(pBCD, systems)):
-        joint_systems.append(pBCD)
-    if(not matrixInList(pACD, systems)):
-        joint_systems.append(pACD)
+    if(not matrixInList(pABC, joint_systems3)):
+        joint_systems3.append(pABC)
+    if(not matrixInList(pABD, joint_systems3)):
+        joint_systems3.append(pABD)
+    if(not matrixInList(pBCD, joint_systems3)):
+        joint_systems3.append(pBCD)
+    if(not matrixInList(pACD, joint_systems3)):
+        joint_systems3.append(pACD)
 
 
     # Recursively separate further
     separate_qutrit(pABC)
-    # separate_qutrit(pABD)
+    separate_qutrit(pABD)
     separate_qutrit(pBCD)
-    # separate_qutrit(pACD)
+    separate_qutrit(pACD)

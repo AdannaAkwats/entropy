@@ -123,6 +123,14 @@ def mutualInfo_leq_HY(Pxy):
     _, _, H_Y = getAllShannon(Pxy)
     return I_XY <= H_Y
 
+def mutualInfo_leqMin(Pxy):
+    """
+    Returns true if I(X:Y) <= min(H(X),H(Y))
+    """
+    I_XY = mutualInformation(Pxy)
+    _, H_X, H_Y = getAllShannon(Pxy)
+    return I_XY <= np.minimum(H_X,H_Y)
+
 def cond_leq_HY(Pxy):
     """
     Returns true if H(X|Y) <= H(X)
@@ -147,7 +155,7 @@ def getPxPyPz(pxyz):
     """
 
     # length of pxy is a cube
-    # length of px, py, pz is the square of the cube root of pxy
+    # length of pxy, pyz, pxz is the square of the cube root of pxyz
     n = len(pxyz) ** (1. / 3)
     lp = int(n ** 2)
     pxy = np.zeros(lp)
@@ -195,3 +203,47 @@ def strongSubadditivity(pxyz):
     H_YZ = shannon(pyz)
     H_Y = shannon(py)
     return H_XYZ + H_Y <= H_XY + H_YZ
+
+
+# TODO
+def getPxyzw(pxyzw):
+    """
+    Separate list pxyzw to get pxyz, pyzw, pxzw and pxyw
+    """
+
+    # length of pxyz is a to the power of 4
+    # length ofpxyz, pyzw, pxzw and pxyw is the cube of the 4th  root of pxyzw
+    n = len(pxyz) ** (1. / 4)
+    lp = int(n ** 3)
+    pxyz = np.zeros(lp)
+    pxyw = np.zeros(lp)
+    pyzw = np.zeros(lp)
+    pxzw = np.zeros(lp)
+
+    n = int(n)
+
+    k = 0
+    eachXYZ = 0
+    l = 0
+    for i in range(len(pxyzw)):
+        # Fill up pxz
+        for j in range(lp):
+            if((i+1) % lp == j):
+                pxz[j] += pxyz[i]
+
+        if((i+1) % lp == 0):
+            l += 1
+
+        # Fill up pxyz
+        eachXYZ += pxyzw[i]
+        if((i+1) % n == 0):
+            pxyz[k] = eachXYZ
+            eachXYZ = 0
+            k += 1
+
+        # Fill up pyz
+        for r in range(n):
+            if((i % n) == r):
+               pyz[i % lp] += pxyz[i]
+
+    return pxyz, pxyw, pyzw, pxzw

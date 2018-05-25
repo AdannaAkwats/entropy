@@ -42,27 +42,52 @@ def testSeparate(seps):
 # print ""
 # print np.trace(p)
 # print ""
-u = test_generate_unitary(2)
-print u
+# u = test_generate_unitary(2)
+# print u
+# print ""
+# gg = generate2(2)
+# print gg
+# print ""
+# print "fid " + str(fidelity(gg,gg))
+#
+#
+#
+# p = test_random_density_matrix(2)
+# print p
+# q =  generate(2)
+# print q
+
+p = generate(16)
+s,j,j3 = separate(p,2)
+for i in s:
+    print i
+    print ""
 print ""
-gg = generate2(2)
-print gg
-print ""
-print "fid " + str(fidelity(gg,gg))
 
+# print new_eq2(p, 2)
+print new_eq7(p,2)
+print test_true(new_eq8,p,2,100)
 
-
-p = test_random_density_matrix(2)
-print p
-q =  generate(2)
-print q
+# print cond_mutual_information(pACD,2) # I(A:C|D)
+#
+# # I(C:D|A)
+# pA = s[0]
+# pAC, pAD = j[2], j[4]
+#
+#
+# H_AC = vonNeumann(pAC)
+# H_A = vonNeumann(pA)
+# H_ACD = vonNeumann(pACD)
+# H_AD = vonNeumann(pAD)
+#
+# print H_AC - H_A - H_ACD + H_AD
 
 #################### Entropy inequalities ##############
 
 # 2 qubit systems
 # g = generate_pure_state(2,2)
 # r = generate(2)
-print "fidelity " + str(fidelity(q,q))
+# print "fidelity " + str(fidelity(q,q))
 # print vonNeumann(g)
 # print is_non_neg_VN(g)
 # print relative_entropy(g,r)
@@ -83,8 +108,8 @@ print ""
 #p = generate_pure_state(2,2)
 # is_CPTP_entropy_more(bit_flip_channel, p, 0.1)
 # is_CPTP_entropy_more(phase_flip_channel, p, 0.1)
-is_CPTP_entropy_more(bit_phase_flip_channel, p, 0.1)
-is_CPTP_entropy_more(depolarising_channel, p, 0.1)
+# is_CPTP_entropy_more(bit_phase_flip_channel, p, 0.1)
+# is_CPTP_entropy_more(depolarising_channel, p, 0.1)
 # print bit_flip_channel(p, 0.5)
 # print depolarising_channel(p,0.5)
 # print bit_phase_flip_channel(p,0.5)
@@ -110,17 +135,17 @@ is_CPTP_entropy_more(depolarising_channel, p, 0.1)
 
 #################### Separation #########################
 # Separate density matrix into several systems
-# seps, j= separate(p)
+# seps, j,_= separate(p)
 # for s in seps:
 #     print s
 #     print ""
 #     print np.trace(s)
 
-#j,seps = separate(p)
+#j,seps,_ = separate(p)
 # for s in seps:
 #     print s
 #     print ""
-#     sep,_ = separate(s)
+#     sep,_,_ = separate(s)
 #     print sep
 #     #print np.trace(s)
 #     print ""
