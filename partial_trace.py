@@ -5,11 +5,11 @@ import random
 import sys
 from utils import *
 
-# Class that cmputes partial trace in 2, 3 and 4 qubits
+# Class that computes partial trace in 2, 3 and 4 qubits
 # and 2,3 and 4 qutrits systems
 
-# Separates joint pure quantum state p by comouting its partial trace
-# Separated Systems are saved in list systems iself.e. pA, pB ...
+# Separates quantum state p by computing its partial trace
+# Separated systems are saved in list systems iself.e. pA, pB ...
 systems = []
 
 # Intermediate joint systems are stored

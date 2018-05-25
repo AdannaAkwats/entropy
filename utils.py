@@ -36,6 +36,37 @@ def matrixInList(A, L):
     return False
 
 
+def isListSame(A, B):
+    """
+    Returns true if lists A and B are equal
+    """
+    dimA = len(A)
+    dimB = len(B)
+
+    if(dimA != dimB):
+        return False
+
+    for i in range(dimA):
+        if(not isclose(A[i],B[i])):
+            return False
+    return True
+
+
+def listInList(ls, searchList):
+    """
+    Returns true if list ls is the list searchList
+    """
+
+    # if list empty
+    if(not searchList):
+        return False
+
+    for l in searchList:
+        if(isListSame(ls, l)):
+            return True
+    return False
+
+
 def isclose(a, b, rel_tol=1e-14, abs_tol=0.0):
     """
     Compares floating point numbers
@@ -80,15 +111,29 @@ def isPowerof3(n):
     return 1162261467 % n == 0;
 
 
-def check_n_q(p, dim, n):
+def check_n_q(p, dim, n, func_str):
     """
     Ensures quantum system p is a n qubit/qutrit quantum state
     """
     d = p.shape[0]
     if(d != dim**n):
-        print "Error in Function 'check_n_q in utils.py':"
+        print "Error in Function '" + func_str + "':"
         print "Quantum system is not a " + str(n) + "-(" + str(dim) + "-dimensional)" + " quantum system"
         sys.exit()
+
+
+def check_power(n, pow, func_str):
+    """
+    Checks if n is written to the pow'th power e.g if pow = 2, then checks if n
+    is a square
+    """
+
+    p = n ** (1. / pow)
+    if(not p.is_integer()):
+        print "Error in Function '" + func_str +"':"
+        print "n is not to the specified power"
+        sys.exit()
+
 
 def check_power_of_dim(n,dim,func_str):
     """

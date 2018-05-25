@@ -46,7 +46,7 @@ def conditional_entropy(pAB,dim):
     """
 
     # Ensure that system is a 2 qubit/qutrit quantum system
-    check_n_q(pAB,dim, 2)
+    check_n_q(pAB,dim, 2, "conditional_entropy in entropy.py")
 
     systems, _,_ = separate(pAB,dim)
     pB = systems[1]
@@ -103,7 +103,7 @@ def mutual_information(pAB,dim):
     calculates the mutual information defined by: I(A:B) = H(A) + H(B) - H(A,B)
     """
     # Ensure that system is a 2 qubit/qutrit quantum system
-    check_n_q(pAB, dim, 2)
+    check_n_q(pAB, dim, 2, "mutual_information in entropy.py")
 
     systems, _, _ = separate(pAB,dim)
     pA = systems[0]
@@ -134,7 +134,7 @@ def cond_mutual_information(pAC, pC, pABC, pBC, dim):
     """
 
     # Ensure that system is a 3 qubit/qutrit quantum system
-    check_n_q(pABC, dim, 3)
+    check_n_q(pABC, dim, 3, "cond_mutual_information in entropy.py")
 
     H_AC = vonNeumann(pAC)
     H_C = vonNeumann(pC)
@@ -143,26 +143,6 @@ def cond_mutual_information(pAC, pC, pABC, pBC, dim):
 
     return H_AC + H_BC - H_C - H_ABC
 
-# def cond_mutual_information(pABC, dim):
-#     """
-#     calculates conditional mutual information
-#     I(A:B|C) = H(A,C) - H(C) - H(A,B,C) + H(B,C)
-#     """
-#
-#     # Ensure that system is a 3 qubit/qutrit quantum system
-#     check_n_q(pABC, dim, 3)
-#
-#     s,j,_ = separate(pABC,dim)
-#     pC = s[2]
-#     pBC, pAC = j[1], j[2]
-#
-#     H_AC = vonNeumann(pAC)
-#     H_C = vonNeumann(pC)
-#     H_ABC = vonNeumann(pABC)
-#     H_BC = vonNeumann(pBC)
-#
-#     return H_AC + H_BC - H_C - H_ABC
-
 
 def and_mutual_information(pABC,dim):
     """
@@ -170,7 +150,7 @@ def and_mutual_information(pABC,dim):
     """
 
     # Ensure that system is a 3 qubit/qutrit quantum system
-    check_n_q(pABC, dim, 3)
+    check_n_q(pABC, dim, 3, "and_mutual_information in entropy.py")
 
     s,j,_ = separate(pABC,dim)
     pA = s[0]
@@ -189,7 +169,7 @@ def weak_subadditivity(pAB,dim):
     """
 
     # Ensure that system is a 2 qubit/qutrit quantum system
-    check_n_q(pAB, dim, 2)
+    check_n_q(pAB, dim, 2, "weak_subadditivity in entropy.py")
 
     systems, _, _ = separate(pAB,dim)
     pA = systems[0]
@@ -209,7 +189,7 @@ def strong_subadditivity_q(pABC,dim):
     """
 
     # Ensure that system is a 3 qubit/qutrit quantum system
-    check_n_q(pABC, dim, 3)
+    check_n_q(pABC, dim, 3, "strong_subadditivity_q in entropy.py")
 
     systems, joint_systems,_ = separate(pABC,dim)
     pAB = joint_systems[0]
@@ -231,7 +211,7 @@ def new_eq1(pABC,dim):
     """
 
     # Ensure that system is a 3 qubit/qutrit quantum system
-    check_n_q(pABC, dim, 3)
+    check_n_q(pABC, dim, 3, "new_eq1 in entropy.py")
 
     # I(A:C|B) = H(A,B)-H(B)-H(A,B,C)-H(B,C)
     seps,joint,_ = separate(pABC,dim)
@@ -275,7 +255,7 @@ def fidelity(p,r):
 
 # Non shannon-type entropies from paper
 # http://www.cnd.mcgill.ca/~ivan/it_ineq_script/Raymond%20Yeung%20papers/04035957.pdf
-# II.2
+# Theorem II.2
 def new_eq2(pABCD,dim):
     """
     Returns true if:
@@ -283,7 +263,7 @@ def new_eq2(pABCD,dim):
     """
 
     # Ensure that system is a 4 qubit/qutrit quantum system
-    check_n_q(pABCD, dim, 4)
+    check_n_q(pABCD, dim, 4, "new_eq2 in entropy.py")
 
     s,j,j3 = separate(pABCD,dim)
     pABC, pABD, pBCD, pACD = j3[0], j3[1], j3[2], j3[3]
@@ -301,7 +281,7 @@ def new_eq2(pABCD,dim):
     return 2*I_C_D <= I_A_B + I_ACD + 3*I_CD_A + I_CD_B
 
 
-# III.1
+# Theorem III.1
 def new_eq3(pABCD,dim):
     """
     Returns true if:
@@ -309,7 +289,7 @@ def new_eq3(pABCD,dim):
     """
 
     # Ensure that system is a 4 qubit/qutrit quantum system
-    check_n_q(pABCD, dim, 4)
+    check_n_q(pABCD, dim, 4, "new_eq3 in entropy.py")
 
     s,j,j3 = separate(pABCD,dim)
     pABC, pABD, pBCD, pACD = j3[0], j3[1], j3[2], j3[3]
@@ -327,7 +307,7 @@ def new_eq3(pABCD,dim):
     return 2*I_A_B <= 3*I_AB_C + 3*I_AC_B + 3*I_BC_A + 2*I_A_D + 2*I_BC_D
 
 
-# III.2
+# Theorem III.2
 def new_eq4(pABCD,dim):
     """
     Returns true if:
@@ -335,7 +315,7 @@ def new_eq4(pABCD,dim):
     """
 
     # Ensure that system is a 4 qubit/qutrit quantum system
-    check_n_q(pABCD, dim, 4)
+    check_n_q(pABCD, dim, 4, "new_eq4 in entropy.py")
 
     s,j,j3 = separate(pABCD,dim)
     pABC, pABD, pBCD, pACD = j3[0], j3[1], j3[2], j3[3]
@@ -363,7 +343,7 @@ def new_eq5(pABCD,dim):
     """
 
     # Ensure that system is a 4 qubit/qutrit quantum system
-    check_n_q(pABCD, dim, 4)
+    check_n_q(pABCD, dim, 4, "new_eq5 in entropy.py")
 
     s,j,j3 = separate(pABCD,dim)
     pABC, pABD, pBCD, pACD = j3[0], j3[1], j3[2], j3[3]
@@ -382,14 +362,14 @@ def new_eq5(pABCD,dim):
 
     return 2*I_A_B <= 3*I_AB_C + 2*I_AC_B + 4*I_BC_A + 2*I_AC_D + I_AD_C + 2*I_B_D + I_CD_A
 
-# III.4
+# Theorem III.4
 def new_eq6(pABCD,dim):
     """
     Returns true if:
     2I(A:B) <= 5I(A:B|C) + 3I(A:C|B) + I(B:C|A) + 2I(A:D) + 2I(B:C|D)
     """
     # Ensure that system is a 4 qubit/qutrit quantum system
-    check_n_q(pABCD, dim, 4)
+    check_n_q(pABCD, dim, 4, "new_eq6 in entropy.py")
 
     s,j,j3 = separate(pABCD,dim)
     pABC, pABD, pBCD, pACD = j3[0], j3[1], j3[2], j3[3]
@@ -406,7 +386,7 @@ def new_eq6(pABCD,dim):
 
     return 2*I_A_B <= 5*I_AB_C + 3*I_AC_B + I_BC_A + 2*I_A_D + 2*I_BC_D
 
-# III.5
+# Theorem III.5
 def new_eq7(pABCD,dim):
     """
     Returns true if:
@@ -414,7 +394,7 @@ def new_eq7(pABCD,dim):
     """
 
     # Ensure that system is a 4 qubit/qutrit quantum system
-    check_n_q(pABCD, dim, 4)
+    check_n_q(pABCD, dim, 4, "new_eq7 in entropy.py")
 
     s,j,j3 = separate(pABCD,dim)
     pABC, pABD, pBCD, pACD = j3[0], j3[1], j3[2], j3[3]
@@ -432,7 +412,7 @@ def new_eq7(pABCD,dim):
 
     return 2*I_A_B <= 4*I_AB_C + 4*I_AC_B + I_BC_A + 2*I_A_D + 2*I_BC_D + I_CD_B
 
-# III.6
+# Theorem III.6
 def new_eq8(pABCD,dim):
     """
     Returns true if:
@@ -440,7 +420,7 @@ def new_eq8(pABCD,dim):
     """
 
     # Ensure that system is a 4 qubit/qutrit quantum system
-    check_n_q(pABCD, dim, 4)
+    check_n_q(pABCD, dim, 4, "new_eq8 in entropy.py")
 
     s,j,j3 = separate(pABCD,dim)
     pABC, pABD, pBCD, pACD = j3[0], j3[1], j3[2], j3[3]
