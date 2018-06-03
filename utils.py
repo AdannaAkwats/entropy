@@ -47,14 +47,14 @@ def isListSame(A, B):
         return False
 
     for i in range(dimA):
-        if(not isclose(A[i],B[i])):
+        if(not np.isclose(A[i],B[i])):
             return False
     return True
 
 
 def listInList(ls, searchList):
     """
-    Returns true if list ls is the list searchList
+    Returns true if list "ls" is the list "searchList"
     """
 
     # if list empty
@@ -65,6 +65,17 @@ def listInList(ls, searchList):
         if(isListSame(ls, l)):
             return True
     return False
+
+def to_list(L):
+    """
+    Converts list of arrays to list of lists
+    """
+    newList = []
+    for arr in L:
+        aList = arr.tolist()
+        newList.append(aList)
+    #newList  = [L[i].tolist() for i in range(len(L))]
+    return newList
 
 
 def isclose(a, b, rel_tol=1e-14, abs_tol=0.0):
@@ -188,11 +199,19 @@ def check_same_size(p,r,func_str):
         print "Density matrices size are not equal"
         sys.exit()
 
+def vector_abs(vector):
+    """
+    Calculates absolute value of a vector
+    """
+    sum = np.sum(vector**2)
+    return sum ** (1. / 2)
+
 
 def test_true(func, *args):
     """
+    *args list contains func arguments and last element of args is "lim"
     Function that runs function func many times and returns true if func returns
-    true lim amount of times
+    true "lim" amount of times
     """
     l = len(args)
     lim = args[l-1] # Last element of *args is the number of times to run func

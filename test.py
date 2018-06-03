@@ -27,88 +27,66 @@ def testSeparate(seps):
 
     return isMatrixSame(p, product)
 
-
 ########### Shannon ###################################
 p = randomProbabilityDist(2**2)
-print(p)
-
-print subadditivity(p)
-print mutual_information_s(p)
-print conditionXY(p)
-print mutualInfo_leq_HY(p)
-print mutualInfo_leqMin(p)
-print cond_leq_HY(p)
-print HXY_geq_max(p)
-
-pp = randomProbabilityDist(2**3)
-print strongSubadditivity(pp)
-print and_mutual_information_s(pp)
-
-q = randomProbabilityDist(2**4)
-print new_eq1_s(q)
-print new_eq2_s(q)
-print new_eq3_s(q)
-print new_eq4_s(q)
-print new_eq5_s(q)
-print new_eq6_s(q)
-print new_eq7_s(q)
-
-
-# s, js, js3 = separate_probs(p)
-# print js3
-# print ""
-# print js
-# print ""
-# print js3[0].sum()
-# print(pxyz)
-# print(pxyw)
-# print(pyzw)
-# print(pxzw)
-# print np.sum(pxyz), np.sum(pxyw), np.sum(pyzw), np.sum(pxzw)
+# print(p)
 #
-# pxy, pyz, pxz = separate_3(pxyz)
-# pxy1, pyw, pxw = separate_3(pxyw)
-# pyz1, pzw, pyw1 = separate_3(pyzw)
-# pxz1, pzw1, pxw1 = separate_3(pxzw)
-# print pxy
-# print pxy1
+# print subadditivity(p)
+# print mutual_information_s(p)
+# print conditionXY(p)
+# print mutualInfo_leq_HY(p)
+# print mutualInfo_leqMin(p)
+# print cond_leq_HY(p)
+# print HXY_geq_max(p)
 # print ""
-# print pyz
-# print pyz1
+
+pp = randomProbabilityDist(2**4)
+# s, j, _ = separate_probs(pp)
+# print pp
 # print ""
-# print pyw
-# print pyw1
+# print j[0]
+# print j[1]
+# print j[2]
 # print ""
-# print pxz
-# print pxz1
+# print s[0]
+# print s[1]
+# print s[2]
+
 # print ""
-# print pzw
-# print pzw1
+# print strongSubadditivity(pp)
+# #print test_true(strongSubadditivity,pp,100)
+# print and_mutual_information_s(pp)
+# #print cond_mutual_information_s
 # print ""
-# print pxw
-# print pxw1
+q = randomProbabilityDist(2**3)
+print_seps(pp)
+
+
+# s, j, j3 = separate_probs(q)
+# print j3[0].sum()#pABC
+# print j3[1] #pABD
+# print ""
+# s1, j1, j31 = separate_probs(j3[0])
+# print s1
+# print ""
+# s2, j2, j32 = separate_probs(j3[1])
+# print s2
+# print ""
+# print_seps(q)
+
+# print new_eq1_s(pp)
+# print new_eq2_s(pp)
+# print new_eq3_s(pp)
+# print new_eq4_s(pp)
+# print new_eq5_s(pp)
+# print new_eq6_s(pp)
+# print new_eq7_s(pp)
+print ""
+print non_shannon_eqs(pp,0)
 
 
 
-# pxy, pyz, pxz = separate_3(p)
-# print(pxy)
-# print(pyz)
-# print(pxz)
-#
-# print np.sum(pxy), np.sum(pyz), np.sum(pxz)
-#
-# px, py = separate_2(pxy)
-# py1, pz = separate_2(pyz)
-# px1, pz1 = separate_2(pxz)
-#
-# print px
-# print px1
-# print ""
-# print py
-# print py1
-# print ""
-# print pz
-# print pz1
+
 
 
 ########### Generate matrices #########################

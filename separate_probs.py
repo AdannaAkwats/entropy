@@ -17,6 +17,15 @@ joint_systems = []
 joint_systems3 = []
 
 
+
+def remove_dups_list(List):
+    seen = []
+    for l in List:
+        if(not listInList(l, seen)):
+            seen.append(l)
+    return seen
+
+
 def separate_probs(p):
     """
     Separate joint probability distribution p into marginal and smaller
@@ -38,8 +47,10 @@ def separate_probs(p):
         print "Probability list length is not a square, cube or to the 4th power"
         sys.exit()
 
-
-    return systems, joint_systems, joint_systems3
+    s = remove_dups_list(systems)
+    j = remove_dups_list(joint_systems)
+    js = remove_dups_list(joint_systems3)
+    return s, j, js
 
 
 def __separate_2(pAB):

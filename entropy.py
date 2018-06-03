@@ -126,6 +126,22 @@ def bound_mutual_information(pAB,dim):
     upper = (I_AB <= 2 * np.minimum(H_A, H_B))
     return lower and upper
 
+def bound_mutual_information_log(pAB,dim):
+    """
+    ensures that mutual information is within bound I(A:B) <= 2log|A| and 2log|B|
+    """
+    I_AB = mutual_information(pAB,dim)
+    s,_,_ = separate(pAB,dim)
+
+    H_A = vonNeumann(s[0])
+    H_B = vonNeumann(s[1])
+
+    values, _ = LA.eig(A)
+    values = values.real
+
+    upper = np.log2(vector_abs(values))
+    return I_AB <= upper
+
 
 def cond_mutual_information(pAC, pC, pABC, pBC, dim):
     """
