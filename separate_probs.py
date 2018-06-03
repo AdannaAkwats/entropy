@@ -36,15 +36,15 @@ def separate_probs(p):
     c = len(p) ** (1. / 3)
     s = len(p) ** (1. / 2)
 
-    if(q.is_integer()):
+    if(q.is_integer() and (q != 1)):
         __separate_4(p)
-    elif(c.is_integer()):
+    elif(c.is_integer() and (c != 1)):
         __separate_3(p)
-    elif(s.is_integer()):
+    elif(s.is_integer() and (s != 1)):
         __separate_2(p)
     else:
-        print "Error in Function 'separate_probs' in separate_probs.py':"
-        print "Probability list length is not a square, cube or to the 4th power"
+        print("Error in Function 'separate_probs' in separate_probs.py':")
+        print("Probability list length is not a square, cube or to the 4th power")
         sys.exit()
 
     s = remove_dups_list(systems)
@@ -60,8 +60,8 @@ def __separate_2(pAB):
     # length of pA, pB square root of the length pAB
     n = len(pAB) ** (1. / 2)
     if(not n.is_integer()):
-        print "Error in Function 'separate_2' in separate_probs.py':"
-        print "Probability list length is not a square"
+        print("Error in Function 'separate_2' in separate_probs.py':")
+        print("Probability list length is not a square")
         sys.exit()
 
     n = int(n)
@@ -95,8 +95,8 @@ def __separate_3(pABC):
     # length of pAB, pBC, pAC is the square of the cube root of pABC
     n = len(pABC) ** (1. / 3)
     if(not n.is_integer()):
-        print "Error in Function 'separate_3' in separate_probs.py':"
-        print "Probability list length is not a cube"
+        print("Error in Function 'separate_3' in separate_probs.py':")
+        print("Probability list length is not a cube")
         sys.exit()
 
     lp = int(n ** 2)
@@ -147,8 +147,8 @@ def __separate_4(pABCD):
     # length ofpABC, pBCD, pACD and pABD is the cube of the 4th  root of pABCD
     n = len(pABCD) ** (1. / 4)
     if(not n.is_integer()):
-        print "Error in Function 'separate_4' in separate_probs.py':"
-        print "Probability list length is not written to the 4th power"
+        print("Error in Function 'separate_4' in separate_probs.py':")
+        print("Probability list length is not written to the 4th power")
         sys.exit()
 
     lp = int(n ** 3)

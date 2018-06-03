@@ -99,8 +99,8 @@ def allocSub(p):
 
     # Error if sub_dim is still = 0
     if sub_dim == 0:
-        print "Error in Function 'allocSub in utils.py':"
-        print "Density matrix dimension not power of 2 (qubit) or 3 (qutrit)"
+        print("Error in Function 'allocSub in utils.py':")
+        print("Density matrix dimension not power of 2 (qubit) or 3 (qutrit)")
 
     temp = np.zeros((sub_dim, sub_dim))
     sub_p = np.matrix(temp, dtype=np.complex128)
@@ -128,8 +128,8 @@ def check_n_q(p, dim, n, func_str):
     """
     d = p.shape[0]
     if(d != dim**n):
-        print "Error in Function '" + func_str + "':"
-        print "Quantum system is not a " + str(n) + "-(" + str(dim) + "-dimensional)" + " quantum system"
+        print("Error in Function '" + func_str + "':")
+        print("Quantum system is not a " + str(n) + "-(" + str(dim) + "-dimensional)" + " quantum system")
         sys.exit()
 
 
@@ -140,9 +140,10 @@ def check_power(n, pow, func_str):
     """
 
     p = n ** (1. / pow)
+    print(n)
     if(not p.is_integer()):
-        print "Error in Function '" + func_str +"':"
-        print "n is not to the specified power"
+        print("Error in Function '" + func_str +"':")
+        print("n is not to the specified power")
         sys.exit()
 
 
@@ -162,9 +163,9 @@ def check_power_of_dim(n,dim,func_str):
     if(q.is_integer()):
         return q
     else:
-        print "Error in Function '" + func_str +"':"
-        print "Density matrix given is not a " + str(dim) +"-dim state"
-        print "i.e. Width and Length of matrix is not in form dim^q"
+        print("Error in Function '" + func_str +"':")
+        print("Density matrix given is not a " + str(dim) +"-dim state")
+        print("i.e. Width and Length of matrix is not in form dim^q")
         sys.exit()
 
 def check_square_matrix(p,func_str):
@@ -175,8 +176,8 @@ def check_square_matrix(p,func_str):
     p2 = p.shape[1]
 
     if(p1 != p2):
-        print "Error in Function '" + func_str +"':"
-        print "Density matrix given is not square"
+        print("Error in Function '" + func_str +"':")
+        print("Density matrix given is not square")
         sys.exit()
 
 
@@ -195,22 +196,23 @@ def check_same_size(p,r,func_str):
     check_square_matrix(r,func_str)
 
     if((p1 != r1) or (p2 != r2)):
-        print "Error in Function '" + func_str +"':"
-        print "Density matrices size are not equal"
+        print("Error in Function '" + func_str +"':")
+        print("Density matrices size are not equal")
         sys.exit()
 
 def vector_abs(vector):
     """
     Calculates absolute value of a vector
     """
-    sum = np.sum(vector**2)
+    vector = vector ** 2
+    sum = np.sum(vector)
     return sum ** (1. / 2)
 
 
-def test_true(func, *args):
+def check_true(f, *args):
     """
     *args list contains func arguments and last element of args is "lim"
-    Function that runs function func many times and returns true if func returns
+    Function that runs function f many times and returns true if func returns
     true "lim" amount of times
     """
     l = len(args)
@@ -218,6 +220,6 @@ def test_true(func, *args):
     func_args = args[0:l-1] # rest of arguments are the function arguments
 
     for i in range(lim):
-        if not func(*func_args) :
+        if not f(*func_args) :
             return False
     return True

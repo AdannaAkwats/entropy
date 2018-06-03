@@ -9,23 +9,9 @@ from entropy import *
 from evolution import *
 from partial_trace import *
 from utils import  *
+from generate_random_quantum import *
 
 
-
-# Check whether tensor product of separated systems gives original density matrix
-def testSeparate(seps):
-    dim = seps[0].shape
-    product = seps[0]
-
-    for i in range(len(seps)):
-        product = np.tensordot(product, seps[1], 0)
-
-    print product
-
-    # temp = np.zeros((dim * 2, dim * 2))
-    # mat = np.matrix(temp, dtype=np.complex128)
-
-    return isMatrixSame(p, product)
 
 ########### Shannon ###################################
 p = randomProbabilityDist(2**2)
@@ -58,8 +44,8 @@ pp = randomProbabilityDist(2**4)
 # print and_mutual_information_s(pp)
 # #print cond_mutual_information_s
 # print ""
-q = randomProbabilityDist(2**3)
-print_seps(pp)
+# q = randomProbabilityDist(2**3)
+# print_seps(pp)
 
 
 # s, j, j3 = separate_probs(q)
@@ -81,21 +67,23 @@ print_seps(pp)
 # print new_eq5_s(pp)
 # print new_eq6_s(pp)
 # print new_eq7_s(pp)
-print ""
-print non_shannon_eqs(pp,0)
-
-
-
-
+# print ""
+# print non_shannon_eqs(pp,0)
 
 
 ########### Generate matrices #########################
 # Generate random unitary matrix
 #U,_,_ = unitary(2)
 # #p = generate(2)
-# U = generate_unitary(2)
-# print U
+#U = generate_unitary(2)
+h = generate_hermitian(2)
+# print "h"
+# print h
 # print ""
+#
+# print time_evol_U(0,h)
+# time_evol_is_unitary(2, h)
+
 # is_unitary(U)
 # print ""
 
@@ -121,29 +109,9 @@ print non_shannon_eqs(pp,0)
 # print q
 
 # p = generate(16)
-# s,j,j3 = separate(p,2)
-# for i in s:
-#     print i
-#     print ""
-# print ""
-#
-# # print new_eq2(p, 2)
-# print new_eq7(p,2)
-# print test_true(new_eq8,p,2,100)
+# print test_true(non_shannon_2,p,2,100)
+# print non_shannon_eqs_q(p,2,0)
 
-# print cond_mutual_information(pACD,2) # I(A:C|D)
-#
-# # I(C:D|A)
-# pA = s[0]
-# pAC, pAD = j[2], j[4]
-#
-#
-# H_AC = vonNeumann(pAC)
-# H_A = vonNeumann(pA)
-# H_ACD = vonNeumann(pACD)
-# H_AD = vonNeumann(pAD)
-#
-# print H_AC - H_A - H_ACD + H_AD
 
 #################### Entropy inequalities ##############
 
@@ -165,7 +133,6 @@ print non_shannon_eqs(pp,0)
 # print strongSubadditivity_q(y)
 #
 
-print ""
 
 #################### Evolution #########################
 #p = generate_pure_state(2,2)

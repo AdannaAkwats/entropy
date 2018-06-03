@@ -5,12 +5,9 @@ import math
 import random
 import sys
 from numpy import linalg as LA
-from entropy import unitary
 from entropy import vonNeumann
-from utils import isclose
-from utils import isPowerof2
-from utils import isPowerof3
-from utils import isMatrixSame
+from generate_random_quantum import generate_hermitian
+from utils import *
 
 
 # Unitary Evolution
@@ -37,11 +34,28 @@ def u_p_u(U, p):
 
 def time_evol_U(t, H):
     """
-    Unitary dynamic evolution U = exp{iHt} where H = Hamitonian
+    Unitary dynamic evolution U = exp{-iHt} where H = Hamitonian (hermitian matrix)
     and t = time
     """
 
-    return math.exp(1j*t*H)
+    return np.exp(-1j*t*H)
+
+
+def time_evol_is_unitary(t, H):
+    """
+    Returns true if time_evol_U gives unitary matrix
+    """
+    # Evolve
+    ev = time_evol_U(t,H)
+
+    # Conjugate of H
+    h_c = np.matrix(H)
+    h_c = h_c.getH()
+
+    # complex conjugate of exp
+    ev_u = time_evol_U(-t, h_c)
+
+    I = ev*ev_u
 
 
 def depolarising_channel(Q, prob):
@@ -58,8 +72,8 @@ def depolarising_channel(Q, prob):
     if(isPowerof3(dim)):
         d = 3
     elif(not isPowerof2(dim)):
-        print "Error in Function 'depolarising_channel in evolution.py':"
-        print "Density matrix given is not a qubit or qutrit system."
+        print("Error in Function 'depolarising_channel in evolution.py':")
+        print("Density matrix given is not a qubit or qutrit system.")
         sys.exit()
 
     I = np.matlib.identity(dim)
@@ -75,8 +89,8 @@ def bit_flip_channel(Q, prob):
     """
     dim = Q.shape[0]
     if(dim != 2):
-        print "Error in Function 'bit_phase_flip_channel in evolution.py':"
-        print "Density matrix given is not a 2 by 2 matrix."
+        print("Error in Function 'bit_phase_flip_channel in evolution.py':")
+        print("Density matrix given is not a 2 by 2 matrix.")
         sys.exit()
 
     I = np.matlib.identity(2)
@@ -100,8 +114,8 @@ def phase_flip_channel(Q, prob):
     """
     dim = Q.shape[0]
     if(dim != 2):
-        print "Error in Function 'bit_phase_flip_channel in evolution.py':"
-        print "Density matrix given is not a 2 by 2 matrix."
+        print("Error in Function 'bit_phase_flip_channel in evolution.py':")
+        print("Density matrix given is not a 2 by 2 matrix.")
         sys.exit()
 
     I = np.matlib.identity(2)
@@ -133,8 +147,8 @@ def bit_phase_flip_channel(Q, prob):
 
     dim = Q.shape[0]
     if(dim != 2):
-        print "Error in Function 'bit_phase_flip_channel in evolution.py':"
-        print "Density matrix given is not a 2 by 2 matrix."
+        print("Error in Function 'bit_phase_flip_channel in evolution.py':")
+        print("Density matrix given is not a 2 by 2 matrix.")
         sys.exit()
 
 
@@ -165,8 +179,8 @@ def is_entropy_constant(op, p, U):
     H_p = vonNeumann(p)
     H_ev = vonNeumann(evolved_p);
 
-    print "Original density matrix entropy " + str(H_p)
-    print "Unitary evolved entropy " + str(H_ev)
+    print("Original density matrix entropy " + str(H_p))
+    print("Unitary evolved entropy " + str(H_ev))
 
     return isclose(H_p, H_ev)
 
@@ -176,14 +190,10 @@ def is_CPTP_entropy_more(op, p, prob):
     Check that CPTP (Completely positve trace preserving)
     quantum operator obeys inequatlity H(E(p)) >= H(p)
     """
+    H_p = vonNeumann(p)
     # Evolve p
     evolved_p = op(p, prob)
-    print "evolved trace: " + str(np.trace(evolved_p))
-    H_p = vonNeumann(p)
-    print "H_p: " + str(H_p)
     H_e = vonNeumann(evolved_p)
-    print "H_e: " + str(H_e)
-    print ""
 
     return H_e >= H_p
 
@@ -197,7 +207,6 @@ def is_unital(op, n):
     for i in range(11):
         E = op(I, prob)
         if(not isMatrixSame(E, I)):
-            print E
             return False
         prob = prob + 0.1
     return True
@@ -205,7 +214,7 @@ def is_unital(op, n):
 
 def is_PTP(op, p):
     """
-    Checks if quantum operator E is positive and trace preserving
+    Checks if quantum operator op is positive and trace preserving
     """
 
     # Check if evolved matrix is positive self definite and has trace = 1
@@ -215,7 +224,6 @@ def is_PTP(op, p):
         eigvalues, _ = np.linalg.eig(E)
         v = eigvalues.real
         tr = np.trace(E).real
-        print tr
         if(np.any(v < 0) or not isclose(tr,1.0)):
             return False
         prob = prob + 0.1

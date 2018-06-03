@@ -55,7 +55,7 @@ def non_shannon_eqs(pABCD, eq_no):
     """
 
     # Ensure that length of pABCD is to the 4th power
-    check_power(len(pABCD), 4, "new_eq7_s in shannon.py")
+    check_power(len(pABCD), 4, "non_shannon_eqs in shannon.py")
 
     s,j,j3 = separate_probs(pABCD)
     pABC, pABD, pBCD, pACD = j3[0], j3[1], j3[2], j3[3]
@@ -63,7 +63,7 @@ def non_shannon_eqs(pABCD, eq_no):
     pA, pB, pC, pD = s[0], s[1], s[2], s[3]
 
     result = []
-    res = False
+    res = 0
 
     I_A_B = mutual_information_s(pAB, pA, pB)        # I(A:B)
     I_A_D = mutual_information_s(pAD, pA, pD)        # I(A:D)

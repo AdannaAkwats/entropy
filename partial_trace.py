@@ -57,6 +57,7 @@ def separate_qubit(p):
     # 2^q = dim, q is the number of qubits
     q = math.log(dim) / math.log(2)
 
+
     # p_AB 2 qubits
     if(q == 2):
         # pA

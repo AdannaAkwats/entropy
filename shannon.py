@@ -13,12 +13,12 @@ def shannon(probs):
     checkSum = np.sum(probs)
 
     if(np.any(probs > 1) or np.any(probs < 0)) : # probabilities are between 0 and 1
-        print "Error in Function 'shannon in shannon.py':"
+        print("Error in Function 'shannon in shannon.py':")
         print("Error: Probabilities are not > 1 or < 0")
         sys.exit()
 
     if(not isclose(checkSum,1)) :
-        print "Error in Function 'shannon in shannon.py':"
+        print("Error in Function 'shannon in shannon.py':")
         print("Error: Probabilities do not add to one")
         sys.exit()
 
@@ -30,7 +30,8 @@ def shannon(probs):
 
 def randomProbabilityDist(n):
     """
-    Generate a random probability distribution of n numbers
+    Generate a random probability distribution of n numbers - from continous
+    uniform distribution
     """
     probs = np.random.random(n)
     probs /= probs.sum()
@@ -47,6 +48,19 @@ def subadditivity(Pxy):
     H_Y = shannon(py)
     H_XY = shannon(Pxy)
     return H_XY <= H_X + H_Y
+
+
+# def shannon_leq_log(px):
+#     """
+#     Returns true if H(X) <= log|X|
+#     """
+#     H_X = shannon(px)
+#     print(H_X)
+#     abs_X = vector_abs(px)
+#     l = np.log2(abs_X)
+#     print(l)
+#
+#     return H_X <= l
 
 
 def conditionXY(Pxy):
@@ -86,6 +100,7 @@ def mutualInfo_leq_HY(Pxy):
     H_Y = shannon(py)
     return I_XY <= H_Y
 
+
 def mutualInfo_leqMin(Pxy):
     """
     Returns true if I(X:Y) <= min(H(X),H(Y))
@@ -108,11 +123,9 @@ def mutualInfo_leq_log(Pxy):
     I_XY = mutual_information_s(Pxy)
     s, _, _ = separate_probs(Pxy)
     px, py = s[0], s[1]
-    H_X = shannon(px)
-    H_Y = shannon(py)
 
-    upper_x = np.log2(vector_abs(px))
-    upper_y = np.log2(vector_abs(py))
+    upper_x = -np.log2(vector_abs(px))
+    upper_y = -np.log2(vector_abs(py))
 
     return (I_XY <= upper_x) and (I_XY <= upper_y)
 
@@ -182,7 +195,6 @@ def and_mutual_information_s(pABC):
     # Ensure that length of pABC is a cube
     check_power(len(pABC), 3, "and_mutual_information_s in shannon.py")
 
-    print_seps(pABC)
     s,j,_ = separate_probs(pABC)
 
     pA = s[0]
@@ -201,17 +213,17 @@ def print_seps(p):
     """
     s, j, j3 = separate_probs(p)
 
-    print "s"
+    print("s")
     for i in s:
-        print i
-    print ""
-    print "j"
+        print(i)
+    print("")
+    print("j")
     for i in j:
-        print i
-    print ""
-    print "j3"
+        print(i)
+    print("")
+    print("j3")
     for i in j3:
-        print i
+        print(i)
 
 
 # Non shannon-type entropies from paper
@@ -407,7 +419,7 @@ def non_shannon_eqs(pABCD, eq_no):
     """
 
     # Ensure that length of pABCD is to the 4th power
-    check_power(len(pABCD), 4, "new_eq7_s in shannon.py")
+    check_power(len(pABCD), 4, "non_shannon_eqs in shannon.py")
 
     s,j,j3 = separate_probs(pABCD)
     pABC, pABD, pBCD, pACD = j3[0], j3[1], j3[2], j3[3]
