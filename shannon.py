@@ -27,6 +27,11 @@ def shannon(probs):
     v = probs*np.log2(probs)
     return -np.sum(v)
 
+def binary_entropy(p):
+    """
+    Returns binary entropy H(p) = -plogp - (1-p)log(1-p)
+    """
+    return -p*np.log2(p) - (1-p)*np.log2(1-p)
 
 def randomProbabilityDist(n):
     """

@@ -76,10 +76,10 @@ def depolarising_channel(Q, prob):
         print("Density matrix given is not a qubit or qutrit system.")
         sys.exit()
 
-    I = np.matlib.identity(dim)
+    I = np.eye(dim)
     E = (prob/d) * I
 
-    return E + (1 - prob) * Q
+    return E + (1-prob)*Q
 
 
 def bit_flip_channel(Q, prob):
@@ -93,17 +93,14 @@ def bit_flip_channel(Q, prob):
         print("Density matrix given is not a 2 by 2 matrix.")
         sys.exit()
 
-    I = np.matlib.identity(2)
+    I = np.eye(2)
     E_0 = math.sqrt(prob) * I
     II = np.zeros((2,2))
     II[1,0] = 1
     II[0,1] = 1
     E_1 = math.sqrt(1-prob) * II
 
-    E_0_mat = np.matrix(E_0)
-    E_1_mat = np.matrix(E_1)
-
-    E = E_0.dot(Q).dot(E_0_mat.getH()) + E_1.dot(Q).dot(E_1_mat.getH())
+    E = E_0.dot(Q).dot(E_0) + E_1.dot(Q).dot(E_1)
 
     return E
 
@@ -118,17 +115,14 @@ def phase_flip_channel(Q, prob):
         print("Density matrix given is not a 2 by 2 matrix.")
         sys.exit()
 
-    I = np.matlib.identity(2)
+    I = np.eye(2)
     E_0 = math.sqrt(prob) * I
     II = np.zeros((2,2))
     II[0,0] = 1
     II[1,1] = -1
     E_1 = math.sqrt(1-prob) * II
 
-    E_0_mat = np.matrix(E_0)
-    E_1_mat = np.matrix(E_1)
-
-    E = E_0.dot(Q).dot(E_0_mat.getH()) + E_1.dot(Q).dot(E_1_mat.getH())
+    E = E_0.dot(Q).dot(E_0) + E_1.dot(Q).dot(E_1)
 
     # Testing ... p = 1/2
     # P_0 = np.zeros((2,2))
@@ -152,7 +146,7 @@ def bit_phase_flip_channel(Q, prob):
         sys.exit()
 
 
-    I = np.matlib.identity(2)
+    I = np.eye(2)
     E_0 = math.sqrt(prob) * I
     temp = np.zeros((2,2))
     II = np.array(temp, dtype=np.complex128)
@@ -160,10 +154,7 @@ def bit_phase_flip_channel(Q, prob):
     II[1,0] = 1j
     E_1 = math.sqrt(1-prob) * II
 
-    E_0_mat = np.matrix(E_0)
-    E_1_mat = np.matrix(E_1)
-
-    E = E_0.dot(Q).dot(E_0_mat.getH()) + E_1.dot(Q).dot(E_1_mat.getH())
+    E = E_0.dot(Q).dot(E_0) + E_1.dot(Q).dot(E_1)
 
     return E
 
@@ -195,7 +186,7 @@ def is_CPTP_entropy_more(op, p, prob):
     evolved_p = op(p, prob)
     H_e = vonNeumann(evolved_p)
 
-    return H_e >= H_p
+    return (H_e > H_p) or isclose(H_e, H_p)
 
 def is_unital(op, n):
     """

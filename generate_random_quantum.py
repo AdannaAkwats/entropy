@@ -111,15 +111,14 @@ def is_hermitian(H):
 # generates multipartite states
 def generate(n):
     """
-    Generate random nxn matrix A s.t A = UDU*, where D is diagonal,
+    Generate random nxn density matrix A s.t A = UDU*, where D is diagonal,
     U is unitary matrix and U* is conplex conjugate transpose of U
     -- A is a multipartite quantum state
     """
 
     # Unitary matrix and its complex conjugate transpose
-    U, U_conj, I = unitary(n)
-    # U_conj = np.matrix(U).getH()
-    # U = test_generate_unitary(n)
+    U = generate_unitary(n)
+    U_conj = np.matrix(U).getH()
 
     # D: diagonal matrix filled with prob distribution so all entries add to 1
     D = np.zeros((n,n))
@@ -130,9 +129,28 @@ def generate(n):
     # A = UDU*
     D_mat = np.matrix(D)
     UD = np.matmul(U, D)
-    # A = UDU*
     A = np.matmul(UD, U_conj)
 
+    # For trace of 1
+    A = A / np.trace(A)
+
+    return A
+
+
+def generate_2(n):
+    """
+    Generate random nxn density matrix A.
+    Note: This is a faster implementation than generate_1(n)
+    Motivated by: article https://arxiv.org/pdf/math-ph/0609050.pdf page 3
+    """
+
+    # Generate random matrix from gaussian distribution
+    R = np.matlib.randn(n,n) + 1j*np.matlib.randn(n,n)
+
+    # Calculate A x A* to get positive semi definite matrix
+    A = R.dot(R.getH())
+
+    # For trace of 1
     A = A / np.trace(A)
 
     return A
@@ -144,8 +162,6 @@ def generate_pure_state(n,dim):
     qubit: dim = 2, qutrit: dim = 3
     Note: Can only generate up to 3-qubit and qutrit states
     """
-
-    #n = n*2
 
     func_str = "generate_pure_state in generate_random_quantum.py"
     check_power_of_dim(n,dim,func_str)

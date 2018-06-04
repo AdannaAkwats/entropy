@@ -19,9 +19,14 @@ def vonNeumann(A):
     # Get eigenvalues of A
     values, _ = LA.eig(A)
     values = values.real
+
     # Take the logarithm of the eigenvalues and sum them
-    v = values*np.log2(values)
-    return -np.sum(v)
+    x = 0
+    for v in values:
+        if not is_close_to_zero(v):
+            x += v*np.log2(v)
+    #v = values*np.log2(values)
+    return -np.sum(x)
 
 
 def is_non_neg_VN(A):
@@ -30,6 +35,33 @@ def is_non_neg_VN(A):
     """
 
     return vonNeumann(A) >= 0
+
+
+def is_vn_leq_log(A):
+    """
+    Returns true if in a d-dim Hibert space the entropy is at most log(d)
+    """
+    dim = A.shape[0]
+    H = vonNeumann(A)
+    return H < np.log2(dim)
+
+
+def H_X_leq_H_XY(p):
+    """
+    Returns true if shannon equation H(X) <= H(XY)
+    Note: This should fail to hold for von Neumann entropy
+    """
+    sys, _, _ = separate(p, 2)
+    pb = sys[1]
+    print(pb)
+    print("")
+    H_B = vonNeumann(pb)
+    print(H_B)
+    print("")
+    H_AB = vonNeumann(p)
+    print(H_AB)
+
+    return H_B <= H_AB
 
 
 def is_non_neg_relative_entropy(p,r):

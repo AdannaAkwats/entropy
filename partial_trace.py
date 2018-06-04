@@ -28,8 +28,6 @@ def separate(p, dim):
     to get single qubit and qutrit systems
     dim = 2 if qubit, dim = 3 if qutrit
     """
-
-
     # Check matrix is square
     check_square_matrix(p, "separate")
 

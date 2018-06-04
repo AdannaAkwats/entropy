@@ -2,6 +2,7 @@ import numpy as np
 from numpy import linalg as LA
 import math
 import random
+import timeit
 
 from shannon import *
 from separate_probs import *
@@ -72,6 +73,23 @@ pp = randomProbabilityDist(2**4)
 
 
 ########### Generate matrices #########################
+t = timeit.Timer("generate(4)", "from generate_random_quantum import generate")
+print("Time taken for generate_1: " + str(t.timeit()))
+s = timeit.Timer("generate_2(4)", "from generate_random_quantum import generate_2")
+print("Time taken for generate_2 :" + str(s.timeit()))
+
+
+# q = test_random_density_matrix(4)
+# s, _, _ = separate(q,2)
+#
+#
+# for i in range(2000):
+#     p2 = generate(4)
+#     res = weak_subadditivity(p2, 2)
+#     if(not res):
+#         print("False")
+#     #print(res)
+
 # Generate random unitary matrix
 #U,_,_ = unitary(2)
 # #p = generate(2)

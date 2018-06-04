@@ -77,12 +77,28 @@ def to_list(L):
     #newList  = [L[i].tolist() for i in range(len(L))]
     return newList
 
+def is_close_to_zero(n):
+    """
+    Returns true if n is close to 0
+    """
+    return abs(n) <= 0.00001
+
 
 def isclose(a, b, rel_tol=1e-14, abs_tol=0.0):
     """
     Compares floating point numbers
     """
     return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
+
+
+def is_positive_semi_def(p):
+    """
+    Returns true if demsity matrix p is positive semi definite i.e all its
+    eigenvalues are non-negative
+    """
+    values, _ = LA.eig(p)
+    values = values.real
+    return np.all(values >= 0)
 
 
 def allocSub(p):

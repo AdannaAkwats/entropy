@@ -63,7 +63,7 @@ def non_shannon_eqs(pABCD, eq_no):
     pA, pB, pC, pD = s[0], s[1], s[2], s[3]
 
     result = []
-    res = 0
+    res = 1
 
     I_A_B = mutual_information_s(pAB, pA, pB)        # I(A:B)
     I_A_D = mutual_information_s(pAD, pA, pD)        # I(A:D)
