@@ -2,6 +2,7 @@ from entropy import *
 from generate_random_quantum import *
 from test_quantum_non_shannon import *
 from evolution import *
+from non_shannon_quantum import *
 
 p = generate(8)
 
@@ -54,20 +55,59 @@ def test_strong_subadditivity():
 
 
 ########### NON SHANNON INEQUALITIES
-def test_non_shannon_eqs():
-    # Returns true if:
-    # EQ1: 2I(C:D) <= I(A:B) + I(A:C,D) + 3I(C:D|A) + I(C:D|B)
-    # EQ2: 2I(A:B) <= 3I(A:B|C) + 3I(A:C|B) + 3I(B:C|A) + 2I(A:D) +2I(B:C|D)
-    # EQ3: 2I(A:B) <= 4I(A:B|C) + I(A:C|B) + 2I(B:C|A) + 3I(A:B|D) + I(B:D|A) + 2I(C:D)
-    # EQ4: 2I(A:B) <= 3I(A:B|C) + 2I(A:C|B) + 4I(B:C|A) + 2I(A:C|D) + I(A:D|C) + ...
-    # 2I(B:D) + I(C:D|A)
-    # EQ5: 2I(A:B) <= 5I(A:B|C) + 3I(A:C|B) + I(B:C|A) + 2I(A:D) + 2I(B:C|D)
-    # EQ6: 2I(A:B) <= 4I(A:B|C) + 4I(A:C|B) + I(B:C|A) + 2I(A:D) + 3I(B:C|D) + I(C:D|B)
-    # EQ7: 2I(A:B) <= 3I(A:B|C) + 2I(A:C|B) + 2I(B:C|A) + 2I(A:B|D) + I(A:D|B) + ...
-    # I(B:D|A) + 2I(C:D)
+# def test_non_shannon_eqs():
+#     # Returns true if:
+#     # EQ1: 2I(C:D) <= I(A:B) + I(A:C,D) + 3I(C:D|A) + I(C:D|B)
+#     # EQ2: 2I(A:B) <= 3I(A:B|C) + 3I(A:C|B) + 3I(B:C|A) + 2I(A:D) +2I(B:C|D)
+#     # EQ3: 2I(A:B) <= 4I(A:B|C) + I(A:C|B) + 2I(B:C|A) + 3I(A:B|D) + I(B:D|A) + 2I(C:D)
+#     # EQ4: 2I(A:B) <= 3I(A:B|C) + 2I(A:C|B) + 4I(B:C|A) + 2I(A:C|D) + I(A:D|C) + ...
+#     # 2I(B:D) + I(C:D|A)
+#     # EQ5: 2I(A:B) <= 5I(A:B|C) + 3I(A:C|B) + I(B:C|A) + 2I(A:D) + 2I(B:C|D)
+#     # EQ6: 2I(A:B) <= 4I(A:B|C) + 4I(A:C|B) + I(B:C|A) + 2I(A:D) + 3I(B:C|D) + I(C:D|B)
+#     # EQ7: 2I(A:B) <= 3I(A:B|C) + 2I(A:C|B) + 2I(B:C|A) + 2I(A:B|D) + I(A:D|B) + ...
+#     # I(B:D|A) + 2I(C:D)
+#
+#     p4 = generate(16)
+#     assert non_shannon_eqs_q(p4,2,0) == [True, True, True, True, True, True, True]
 
-    p4 = generate(16)
-    assert non_shannon_eqs_q(p4,2,0) == [True, True, True, True, True, True, True]
+
+p4 = generate(16)
+def test_non_shannon_1():
+    # Returns true if 2I(C:D) <= I(A:B) + I(A:C,D) + 3I(C:D|A) + I(C:D|B)
+    assert non_shannon_1(p4, 2) == True
+
+def test_non_shannon_2():
+    # Returns true if:
+    # 2I(A:B) <= 3I(A:B|C) + 3I(A:C|B) + 3I(B:C|A) + 2I(A:D) +2I(B:C|D)
+    assert non_shannon_2(p4, 2) == True
+
+def test_non_shannon_3():
+    # Returns true if:
+    # 2I(A:B) <= 4I(A:B|C) + I(A:C|B) + 2I(B:C|A) + 3I(A:B|D) + I(B:D|A) + 2I(C:D)
+    assert non_shannon_3(p4, 2) == True
+
+def test_non_shannon_4():
+    # Returns true if:
+    # 2I(A:B) <= 3I(A:B|C) + 2I(A:C|B) + 4I(B:C|A) + 2I(A:C|D) + I(A:D|C) + ...
+    # 2I(B:D) + I(C:D|A)
+    assert non_shannon_4(p4, 2) == True
+
+def test_non_shannon_5():
+    # Returns true if:
+    # 2I(A:B) <= 5I(A:B|C) + 3I(A:C|B) + I(B:C|A) + 2I(A:D) + 2I(B:C|D)
+    assert non_shannon_5(p4, 2) == True
+
+def test_non_shannon_6():
+    # Returns if:
+    # 2I(A:B) <= 4I(A:B|C) + 4I(A:C|B) + I(B:C|A) + 2I(A:D) + 3I(B:C|D) + I(C:D|B)
+    assert non_shannon_6(p4, 2) == True
+
+def test_non_shannon_7():
+    # Returns if:
+    # 2I(A:B) <= 3I(A:B|C) + 2I(A:C|B) + 2I(B:C|A) + 2I(A:B|D) + I(A:D|B) + ...
+    # I(B:D|A) + 2I(C:D)
+    assert non_shannon_7(p4, 2) == True
+
 
 
 ####### EVOLUTION
