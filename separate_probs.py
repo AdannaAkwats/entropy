@@ -5,16 +5,16 @@ import sys
 
 # Separates joint propability distribution
 # Separated systems are saved in list systems iself.e. pA, pB ...
-systems = []
+# systems = []
 
 # Intermediate joint distributions are stored
 # Order for pABC:  pAB, pBC, pAC
 # Order for pABCD: pAB (0), pBC (1), pAC (2), pBD (3), pAD (4), pCD (5)
-joint_systems = []
+# joint_systems = []
 
 # Intermediate joint distributions are stored
 # Order for pABCD: pABC (0), pABD (1), pBCD (2), pACD (3)
-joint_systems3 = []
+# joint_systems3 = []
 
 
 
@@ -27,6 +27,11 @@ def remove_dups_list(List):
 
 
 def separate_probs(p):
+    s, j, j3 = separate_main(p, [], [], [])
+    return s, j, j3
+
+
+def separate_main(p, systems, joint_systems, joint_systems3):
     """
     Separate joint probability distribution p into marginal and smaller
     joint probabilities
@@ -37,11 +42,11 @@ def separate_probs(p):
     s = len(p) ** (1. / 2)
 
     if(q.is_integer() and (q != 1)):
-        __separate_4(p)
+        __separate_4(p, systems, joint_systems, joint_systems3)
     elif(c.is_integer() and (c != 1)):
-        __separate_3(p)
+        __separate_3(p, systems, joint_systems, joint_systems3)
     elif(s.is_integer() and (s != 1)):
-        __separate_2(p)
+        __separate_2(p, systems, joint_systems, joint_systems3)
     else:
         print("Error in Function 'separate_probs' in separate_probs.py':")
         print("Probability list length is not a square, cube or to the 4th power")
@@ -53,7 +58,7 @@ def separate_probs(p):
     return s, j, js
 
 
-def __separate_2(pAB):
+def __separate_2(pAB, systems, joint_systems, joint_systems3):
     """
     Separate list pAB to pA and pB
     """
@@ -86,7 +91,7 @@ def __separate_2(pAB):
             systems.append(pB)
 
 
-def __separate_3(pABC):
+def __separate_3(pABC, systems, joint_systems, joint_systems3):
     """
     Separate list pABC to get pAB, pBC and pAC
     """
@@ -133,12 +138,12 @@ def __separate_3(pABC):
         joint_systems.append(pAC)
 
     # Recursively separate further
-    separate_probs(pAB)
-    separate_probs(pBC)
-    separate_probs(pAC)
+    separate_main(pAB, systems, joint_systems, joint_systems3)
+    separate_main(pBC, systems, joint_systems, joint_systems3)
+    separate_main(pAC, systems, joint_systems, joint_systems3)
 
 
-def __separate_4(pABCD):
+def __separate_4(pABCD, systems, joint_systems, joint_systems3):
     """
     Separate list pABCD to get pABC, pBCD, pACD and pABD
     """
@@ -198,7 +203,7 @@ def __separate_4(pABCD):
         joint_systems3.append(pACD)
 
     # Recursively separate further
-    separate_probs(pABC)
-    separate_probs(pABD)
-    separate_probs(pBCD)
-    separate_probs(pACD)
+    separate_main(pABC, systems, joint_systems, joint_systems3)
+    separate_main(pABD, systems, joint_systems, joint_systems3)
+    separate_main(pBCD, systems, joint_systems, joint_systems3)
+    separate_main(pACD, systems, joint_systems, joint_systems3)

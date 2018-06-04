@@ -11,7 +11,7 @@ from evolution import *
 from partial_trace import *
 from utils import  *
 from generate_random_quantum import *
-
+from non_shannon_quantum import *
 
 
 ########### Shannon ###################################
@@ -73,10 +73,30 @@ pp = randomProbabilityDist(2**4)
 
 
 ########### Generate matrices #########################
-t = timeit.Timer("generate(4)", "from generate_random_quantum import generate")
-print("Time taken for generate_1: " + str(t.timeit()))
-s = timeit.Timer("generate_2(4)", "from generate_random_quantum import generate_2")
-print("Time taken for generate_2 :" + str(s.timeit()))
+# t = timeit.Timer("generate(4)", "from generate_random_quantum import generate")
+# print("Time taken for generate_1: " + str(t.timeit()))
+# s = timeit.Timer("generate_2(4)", "from generate_random_quantum import generate_2")
+# print("Time taken for generate_2 :" + str(s.timeit()))
+
+
+# p = generate_2(3**4)
+# print non_shannon_1(p, 3)
+#print and_mutual_information(p,3)
+
+
+#
+# for i in range(10):
+#     p = generate(4)
+#     r = generate(4)
+#     res = monotocity_relative_entropy(p, r, 2)
+#     if(not res):
+#         print("False")
+        # print("HX < HXY ?")
+        # print(H_X_leq_H_XY(p))
+        # print("cond")
+        # print(conditional_entropy(p,2))
+
+#print check_true(H_X_leq_H_XY, p, 1000)
 
 
 # q = test_random_density_matrix(4)

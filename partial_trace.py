@@ -10,19 +10,24 @@ from utils import *
 
 # Separates quantum state p by computing its partial trace
 # Separated systems are saved in list systems iself.e. pA, pB ...
-systems = []
+# systems = []
 
 # Intermediate joint systems are stored
 # Order for pABC:  pAB, pBC, pAC
 # Order for pABCD: pAB (0), pBC (1), pAC (2), pBD (3), pAD (4), pCD (5)
-joint_systems = []
+# joint_systems = []
 
 # Intermediate joint systems are stored
 # Order for pABCD: pABC (0), pABD (1), pBCD (2), pACD (3)
-joint_systems3 = []
+# joint_systems3 = []
 
 
-def separate(p, dim):
+def separate(p,dim):
+    s, j, j3 = partial_trace(p, dim, [], [], [])
+    return s, j, j3
+
+
+def partial_trace(p, dim, systems, joint_systems, joint_systems3):
     """
     Top level function that calls separate_qubit and separate_qutrit
     to get single qubit and qutrit systems
@@ -37,24 +42,22 @@ def separate(p, dim):
     q = check_power_of_dim(n, dim, func_str)
 
     if(isPowerof2(dim)):
-        separate_qubit(p)
+        separate_qubit(p, systems, joint_systems, joint_systems3)
     else:
-        separate_qutrit(p)
+        separate_qutrit(p, systems, joint_systems, joint_systems3)
 
     return systems, joint_systems, joint_systems3
 
 
-def separate_qubit(p):
+def separate_qubit(p, systems, joint_systems, joint_systems3):
     """
     Function that separates joint pure qubit quantum state p. The density matrix
     width (and length) MUST be written as 2^q where q is the number of qubits
     """
 
     dim = p.shape[0]
-
     # 2^q = dim, q is the number of qubits
     q = math.log(dim) / math.log(2)
-
 
     # p_AB 2 qubits
     if(q == 2):
@@ -82,13 +85,13 @@ def separate_qubit(p):
 
     # p_ABC 3 qubits
     elif(q == 3):
-        __separate3(p)
+        __separate3(p, systems, joint_systems, joint_systems3)
     elif(q == 4):
-        __separate4(p)
+        __separate4(p, systems, joint_systems, joint_systems3)
 
 
 
-def __separate3(p):
+def __separate3(p, systems, joint_systems, joint_systems3):
     """
     Private method that calculates partial trace of 3 qubit systems
     """
@@ -132,12 +135,12 @@ def __separate3(p):
         joint_systems.append(pAC)
 
     # Separate joint systems into single systems
-    separate_qubit(pAB)
-    separate_qubit(pBC)
-    separate_qubit(pAC)
+    separate_qubit(pAB, systems, joint_systems, joint_systems3)
+    separate_qubit(pBC, systems, joint_systems, joint_systems3)
+    separate_qubit(pAC, systems, joint_systems, joint_systems3)
 
 
-def __separate4(p):
+def __separate4(p, systems, joint_systems, joint_systems3):
     """
     Private method that calculates separate systems for 4 qubit systems
     """
@@ -162,7 +165,7 @@ def __separate4(p):
 
     y_ABD = [x+(2**1) for x in x_ABD]
 
-    # pBCD
+    # pACD
     pACD = allocSub(p)
     x_ACD = [0 for x in range(sub_dim)]
     for i in range(1,sub_dim):
@@ -197,15 +200,15 @@ def __separate4(p):
         joint_systems3.append(pACD)
 
     # Separate joint systems into single systems
-    separate_qubit(pABC)
-    separate_qubit(pABD)
-    separate_qubit(pBCD)
-    separate_qubit(pACD)
+    separate_qubit(pABC, systems, joint_systems, joint_systems3)
+    separate_qubit(pABD, systems, joint_systems, joint_systems3)
+    separate_qubit(pBCD, systems, joint_systems, joint_systems3)
+    separate_qubit(pACD, systems, joint_systems, joint_systems3)
 
 
 
 # Separate qutrit <0|, <1|, <2|
-def separate_qutrit(p):
+def separate_qutrit(p, systems, joint_systems, joint_systems3):
     """
     Function that separates joint pure qutrit quantum state p. The density
     matrix width (and length) MUST be written as 3^q where q is the number
@@ -247,12 +250,12 @@ def separate_qutrit(p):
 
     # p_ABC 3 qutrits
     elif(q == 3):
-        __separate3_qutrit(p)
+        __separate3_qutrit(p, systems, joint_systems, joint_systems3)
     elif(q == 4):
-        __separate4_qutrit(p)
+        __separate4_qutrit(p, systems, joint_systems, joint_systems3)
 
 
-def __separate3_qutrit(p):
+def __separate3_qutrit(p, systems, joint_systems, joint_systems3):
     """
     Private method that calculates separate systems for 3 qutrit systems
     """
@@ -300,12 +303,12 @@ def __separate3_qutrit(p):
         joint_systems.append(pAC)
 
     # Recursively separate further
-    separate_qutrit(pAB)
-    separate_qutrit(pBC)
-    separate_qutrit(pAC)
+    separate_qutrit(pAB, systems, joint_systems, joint_systems3)
+    separate_qutrit(pBC, systems, joint_systems, joint_systems3)
+    separate_qutrit(pAC, systems, joint_systems, joint_systems3)
 
 
-def __separate4_qutrit(p):
+def __separate4_qutrit(p, systems, joint_systems, joint_systems3):
     """
     Private method that calculates separate systems for 4 qutrit systems
     """
@@ -334,9 +337,9 @@ def __separate4_qutrit(p):
     x_ACD = [0 for x in range(sub_dim)]
     for i in range(1,sub_dim):
         if((i%9) == 0):
-            x_ABD[i] = x_ABD[i-1] + (9*2 + 1)
+            x_ACD[i] = x_ACD[i-1] + (9*2 + 1)
         else:
-            x_ABD[i] = x_ABD[i-1] + 1
+            x_ACD[i] = x_ACD[i-1] + 1
 
     y_ACD = [x+(3**2) for x in x_ACD]
     z_ACD = [x+(3**2) for x in y_ACD]
@@ -368,7 +371,7 @@ def __separate4_qutrit(p):
 
 
     # Recursively separate further
-    separate_qutrit(pABC)
-    separate_qutrit(pABD)
-    separate_qutrit(pBCD)
-    separate_qutrit(pACD)
+    separate_qutrit(pABC, systems, joint_systems, joint_systems3)
+    separate_qutrit(pABD, systems, joint_systems, joint_systems3)
+    separate_qutrit(pBCD, systems, joint_systems, joint_systems3)
+    separate_qutrit(pACD, systems, joint_systems, joint_systems3)

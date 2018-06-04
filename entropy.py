@@ -49,19 +49,15 @@ def is_vn_leq_log(A):
 def H_X_leq_H_XY(p):
     """
     Returns true if shannon equation H(X) <= H(XY)
-    Note: This should fail to hold for von Neumann entropy
+    Note: This should fail to hold for von Neumann entropy by page 541 in book:
+    Quantum Compuation and Quantum Information
     """
     sys, _, _ = separate(p, 2)
-    pb = sys[1]
-    print(pb)
-    print("")
-    H_B = vonNeumann(pb)
-    print(H_B)
-    print("")
+    pA = sys[0]
+    H_A = vonNeumann(pA)
     H_AB = vonNeumann(p)
-    print(H_AB)
 
-    return H_B <= H_AB
+    return H_A <= H_AB
 
 
 def is_non_neg_relative_entropy(p,r):
@@ -82,7 +78,7 @@ def conditional_entropy(pAB,dim):
 
     systems, _,_ = separate(pAB,dim)
     pB = systems[1]
-    H_B = vonNeumann(B)
+    H_B = vonNeumann(pB)
     H_AB = vonNeumann(pAB)
 
     return H_AB - H_B
@@ -124,10 +120,13 @@ def monotocity_relative_entropy(pAB, rAB,dim):
     H_AB = relative_entropy(pAB,rAB)
     s_p,_,_ = separate(pAB,dim)
     pA = s_p[0]
+
     s_r,_,_ = separate(rAB,dim)
-    rA = s_p[0]
+    rA = s_r[0]
+
     H_A = relative_entropy(pA, rA)
-    return H_AB <= H_A
+
+    return H_A <= H_AB
 
 
 def mutual_information(pAB,dim):
@@ -165,13 +164,11 @@ def bound_mutual_information_log(pAB,dim):
     I_AB = mutual_information(pAB,dim)
     s,_,_ = separate(pAB,dim)
 
-    H_A = vonNeumann(s[0])
-    H_B = vonNeumann(s[1])
+    # d-dim hilbert space
+    a_dim = s[0].shape[0]
+    b_dim = s[1].shape[0]
 
-    values, _ = LA.eig(pAB)
-    values = values.real
-
-    upper = np.log2(vector_abs(values))
+    upper = (2*np.log2(a_dim)) or (2*np.log2(b_dim))
     return I_AB <= upper
 
 
@@ -200,7 +197,7 @@ def and_mutual_information(pABC,dim):
     # Ensure that system is a 3 qubit/qutrit quantum system
     check_n_q(pABC, dim, 3, "and_mutual_information in entropy.py")
 
-    s,j,_ = separate(pABC,dim)
+    s,j,j3 = separate(pABC,dim)
     pA = s[0]
     pBC = j[1]
 

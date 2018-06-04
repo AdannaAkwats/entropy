@@ -25,10 +25,9 @@ def non_shannon_1(pABCD,dim):
     pAB, pBC, pAC, pBD, pAD, pCD = j[0], j[1], j[2], j[3], j[4], j[5]
     pA, pB, pC, pD = s[0], s[1], s[2], s[3]
 
-    I_C_D = mutual_information(pCD,dim)  # I(C:D)
+    I_C_D = mutual_information(pCD,dim)        # I(C:D)
     I_A_B = mutual_information(pAB,dim)        # I(A:B)
     I_ACD = and_mutual_information(pACD,dim)   # I(A:C,D)
-
 
     I_CD_A = cond_mutual_information(pAC, pA, pACD, pAD, dim) # I(C:D|A)
     I_CD_B = cond_mutual_information(pBC, pB, pBCD, pBD, dim) # I(C:D|B)

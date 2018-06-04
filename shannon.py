@@ -55,17 +55,14 @@ def subadditivity(Pxy):
     return H_XY <= H_X + H_Y
 
 
-# def shannon_leq_log(px):
-#     """
-#     Returns true if H(X) <= log|X|
-#     """
-#     H_X = shannon(px)
-#     print(H_X)
-#     abs_X = vector_abs(px)
-#     l = np.log2(abs_X)
-#     print(l)
-#
-#     return H_X <= l
+def shannon_leq_log(px):
+    """
+    Returns true if H(X) <= log|X|
+    """
+    H_X = shannon(px)
+    l = np.log2(len(px))
+
+    return H_X <= l
 
 
 def conditionXY(Pxy):
@@ -103,7 +100,19 @@ def mutualInfo_leq_HY(Pxy):
     s, _, _ = separate_probs(Pxy)
     _, py = s[0], s[1]
     H_Y = shannon(py)
+
     return I_XY <= H_Y
+
+
+def H_X_leq_H_XY_s(pxy):
+    """
+    Returns true if H(X) <= H(XY)
+    """
+    s,_,_ = separate_probs(pxy)
+    px = s[0]
+    H_X = shannon(px)
+    H_XY = shannon(pxy)
+    return H_X <= H_XY
 
 
 def mutualInfo_leqMin(Pxy):
@@ -129,8 +138,9 @@ def mutualInfo_leq_log(Pxy):
     s, _, _ = separate_probs(Pxy)
     px, py = s[0], s[1]
 
-    upper_x = -np.log2(vector_abs(px))
-    upper_y = -np.log2(vector_abs(py))
+    # the dim of px and py
+    upper_x = np.log2(len(px))
+    upper_y = np.log2(len(py))
 
     return (I_XY <= upper_x) and (I_XY <= upper_y)
 
