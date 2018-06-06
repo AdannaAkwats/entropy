@@ -1,11 +1,13 @@
 import numpy as np
 import math
 import random
+import sys
 
 from numpy import linalg as LA
 from shannon import randomProbabilityDist
 from partial_trace import separate
 from utils import *
+from generate_random_quantum import *
 
 
 def vonNeumann(A):
@@ -34,7 +36,8 @@ def is_non_neg_VN(A):
     Returns true if vonNeumann entropy >= 0
     """
 
-    return vonNeumann(A) >= 0
+    H = vonNeumann(A)
+    return H > 0 or is_close_to_zero(H)
 
 
 def is_vn_leq_log(A):
@@ -43,7 +46,9 @@ def is_vn_leq_log(A):
     """
     dim = A.shape[0]
     H = vonNeumann(A)
-    return H < np.log2(dim)
+    l = np.log2(dim)
+
+    return H < l or np.isclose(H, l)
 
 
 def H_X_leq_H_XY(p):
@@ -52,7 +57,7 @@ def H_X_leq_H_XY(p):
     Note: This should fail to hold for von Neumann entropy by page 541 in book:
     Quantum Compuation and Quantum Information
     """
-    sys, _, _ = separate(p, 2)
+    sys, _, _, _ = separate(p, 2)
     pA = sys[0]
     H_A = vonNeumann(pA)
     H_AB = vonNeumann(p)
@@ -76,8 +81,8 @@ def conditional_entropy(pAB,dim):
     # Ensure that system is a 2 qubit/qutrit quantum system
     check_n_q(pAB,dim, 2, "conditional_entropy in entropy.py")
 
-    systems, _,_ = separate(pAB,dim)
-    pB = systems[1]
+    s, _,_, _ = separate(pAB,dim)
+    pB = s[1]
     H_B = vonNeumann(pB)
     H_AB = vonNeumann(pAB)
 
@@ -109,7 +114,7 @@ def relative_entropy(p,r):
     return A - B
 
 
-def monotocity_relative_entropy(pAB, rAB,dim):
+def monotocity_relative_entropy(pAB, rAB, dim):
     """
     Returns true if relative entropy is monotonic i.e. H(pA || rA) <= H(pAB || rAB)
     """
@@ -118,15 +123,47 @@ def monotocity_relative_entropy(pAB, rAB,dim):
     check_same_size(pAB,rAB,"monotocity_relative_entropy in entropy.py")
 
     H_AB = relative_entropy(pAB,rAB)
-    s_p,_,_ = separate(pAB,dim)
-    pA = s_p[0]
+    s_p,_,_,_ = separate(pAB,dim)
+    s_r,_,_,_= separate(rAB,dim)
 
-    s_r,_,_ = separate(rAB,dim)
+    pA = s_p[0]
     rA = s_r[0]
 
     H_A = relative_entropy(pA, rA)
 
     return H_A <= H_AB
+
+
+# def monotocity_relative_entropy(pAB, rAB, dim):
+#     """
+#     Returns true if relative entropy is monotonic i.e. H(pA || rA) <= H(pAB || rAB)
+#     """
+#
+#     # Checks that pAB and rAB have same size and are both square
+#     check_same_size(pAB,rAB,"monotocity_relative_entropy in entropy.py")
+#
+#     H_AB = relative_entropy(pAB,rAB)
+#     s_p,j_p,j3_p = separate(pAB,dim)
+#     s_r,j_r,j3_r = separate(rAB,dim)
+#
+#     pA = []
+#     rA = []
+#     if(len(j3_p) == 0):
+#         if(len(j_p) == 0):
+#             pA = s_p[0]
+#             rA = s_r[0]
+#         else:
+#             k = np.random.randint(len(j_p))
+#             pA = j_p[k]
+#             rA = j_r[k]
+#     else:
+#         h = np.random.randint(len(j3_p))
+#         pA = j3_p[h]
+#         rA = j3_r[h]
+#
+#     H_A = relative_entropy(pA, rA)
+#
+#     return H_A <= H_AB
 
 
 def mutual_information(pAB,dim):
@@ -136,7 +173,7 @@ def mutual_information(pAB,dim):
     # Ensure that system is a 2 qubit/qutrit quantum system
     check_n_q(pAB, dim, 2, "mutual_information in entropy.py")
 
-    systems, _, _ = separate(pAB,dim)
+    systems, _, _,_ = separate(pAB,dim)
     pA = systems[0]
     pB = systems[1]
     H_A = vonNeumann(pA)
@@ -150,7 +187,7 @@ def bound_mutual_information(pAB,dim):
     ensures that mutual information is within bound 0 <= I(A:B) <= 2min(H(A),H(B))
     """
     I_AB = mutual_information(pAB,dim)
-    s,_,_ = separate(pAB,dim)
+    s,_,_,_ = separate(pAB,dim)
     lower = (I_AB >= 0)
     H_A = vonNeumann(s[0])
     H_B = vonNeumann(s[1])
@@ -162,7 +199,7 @@ def bound_mutual_information_log(pAB,dim):
     ensures that mutual information is within bound I(A:B) <= 2log|A| and 2log|B|
     """
     I_AB = mutual_information(pAB,dim)
-    s,_,_ = separate(pAB,dim)
+    s,_,_,_ = separate(pAB,dim)
 
     # d-dim hilbert space
     a_dim = s[0].shape[0]
@@ -197,7 +234,7 @@ def and_mutual_information(pABC,dim):
     # Ensure that system is a 3 qubit/qutrit quantum system
     check_n_q(pABC, dim, 3, "and_mutual_information in entropy.py")
 
-    s,j,j3 = separate(pABC,dim)
+    s,j,j3,_ = separate(pABC,dim)
     pA = s[0]
     pBC = j[1]
 
@@ -216,7 +253,7 @@ def weak_subadditivity(pAB,dim):
     # Ensure that system is a 2 qubit/qutrit quantum system
     check_n_q(pAB, dim, 2, "weak_subadditivity in entropy.py")
 
-    systems, _, _ = separate(pAB,dim)
+    systems, _, _,_ = separate(pAB,dim)
     pA = systems[0]
     pB = systems[1]
     H_A = vonNeumann(pA)
@@ -235,7 +272,7 @@ def strong_subadditivity_q(pABC,dim):
     # Ensure that system is a 3 qubit/qutrit quantum system
     check_n_q(pABC, dim, 3, "strong_subadditivity_q in entropy.py")
 
-    systems, joint_systems,_ = separate(pABC,dim)
+    systems, joint_systems,_,_ = separate(pABC,dim)
     pAB = joint_systems[0]
     pBC = joint_systems[1]
     pB = systems[1]
@@ -246,3 +283,115 @@ def strong_subadditivity_q(pABC,dim):
     H_B = vonNeumann(pB)
 
     return H_ABC + H_B <= H_AB + H_BC
+
+def is_entangled(pAB, pB):
+    """
+    Returns true if p is entangled in A : B. If H(AB) - H(B) < 0
+    """
+    H_AB = vonNeumann(pAB)
+    H_B = vonNeumann(pB)
+
+    return (H_AB - H_B) < 0
+
+
+def mixed_entangled_bipartite(gen_func, lim, dim):
+    """
+    Return number of mixed states and number of mixed entangled states out of
+    the n bipartite states generated
+    """
+
+    ent = 0
+    for i in range(lim):
+        p = gen_func(dim**2)
+        s,_,_,_ = separate(p, dim)
+
+        if(is_entangled(p, s[1])): #p and pB
+            ent = ent + 1
+
+    return lim, ent, lim-ent
+
+
+def mixed_entangled_joint(gen_func, size, dim, cut, lim):
+    """
+    size: 3 (tri- partite), 4, 5 partite system
+    Return number of mixed states and number of mixed entangled states out of
+    the lim 3 4 or 5 partite states generated.
+    cut = 1 -> entanglement between pAB|CDE
+    cut = 2 -> entanglement between pABC|DE
+    """
+    ent = 0
+    func = is_entangled_ABC
+    if (size == 4):
+        func = is_entangled_ABCD
+    elif(size == 5):
+        func = is_entangled_5
+    elif(size != 3):
+        print("Error in function 'mixed_entangled_joint' in entropy.py")
+        print("size given is not valid.")
+        sys.exit()
+
+    for i in range(lim):
+        p = gen_func(dim**size)
+        if(func(p, dim, cut)):
+            ent = ent + 1
+
+    return lim, ent, lim-ent
+
+
+
+def is_entangled_ABC(pABC, dim, cut):
+    """
+    Returns true if pABCD is entangled with cut s.t
+    cut 1 - pA|BC : H(ABC) - H(A) < 0
+    cut 2 - pAB|C : H(ABC) - H(AB) < 0
+    """
+    s, j, _,_ = separate(pABC, dim)
+    if(cut == 1):
+        pA = s[0]
+        return is_entangled(pABC, pA)
+    elif(cut == 2):
+        pAB = j[0]
+        return is_entangled(pABC, pAB)
+    else:
+        print("Error in function 'is_entangled_ABC'")
+        print("Cut given is not valid.")
+        sys.exit()
+
+
+def is_entangled_ABCD(pABCD, dim, cut):
+    """
+    Returns true if pABCD is entangled with cut s.t
+    cut 1 - pA|BCD : H(ABCD) - H(A) < 0
+    cut 2 - pAB|CD : H(ABCD) - H(AB) < 0
+    """
+    s, j, j3,_ = separate(pABCD, dim)
+    if(cut == 1):
+        pA = s[0]
+        return is_entangled(pABCD, pA)
+    elif(cut == 2):
+        pAB = j[0]
+        return is_entangled(pABCD, pAB)
+    else:
+        print("Error in function 'is_entangled_ABC'")
+        print("Cut given is not valid.")
+        sys.exit()
+
+
+def is_entangled_5(pABCDE, dim, cut):
+    """
+    Returns true if pABCD is entangled with cut s.t
+    cut 1 - pAB|CDE : H(ABCDE) - H(AB) < 0
+    cut 2 - pABC|DE : H(ABCDE) - H(ABC) < 0
+    """
+    s, j, j3,j4 = separate(pABCDE, dim)
+    if(cut == 1):
+        pA = j[0]
+        return is_entangled(pABCDE, pA)
+    elif(cut == 2):
+        pAB = j3[0]
+        return is_entangled(pABCDE, pAB)
+
+    else:
+        print("Error in function 'is_entangled_ABC' in entropy.py")
+        print("Cut given is not valid.")
+        sys.exit()

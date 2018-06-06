@@ -124,13 +124,6 @@ def phase_flip_channel(Q, prob):
 
     E = E_0.dot(Q).dot(E_0) + E_1.dot(Q).dot(E_1)
 
-    # Testing ... p = 1/2
-    # P_0 = np.zeros((2,2))
-    # P_0[0,0] = 1
-    # P_1 = np.zeros((2,2))
-    # P_1[1,1] = 1
-    # E_pr = P_0.dot(Q).dot(P_0) + P_1.dot(Q).dot(P_1)
-
     return E
 
 
@@ -169,9 +162,6 @@ def is_entropy_constant(op, p, U):
     evolved_p = op(U, p)
     H_p = vonNeumann(p)
     H_ev = vonNeumann(evolved_p);
-
-    print("Original density matrix entropy " + str(H_p))
-    print("Unitary evolved entropy " + str(H_ev))
 
     return isclose(H_p, H_ev)
 

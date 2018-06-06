@@ -5,6 +5,41 @@ import random
 import sys
 
 
+def is_close_to_zero(n):
+    """
+    Returns true if n is close to 0
+    """
+    return abs(n) <= 0.0001
+
+
+def isclose(a, b, rel_tol=1e-14, abs_tol=0.0):
+    """
+    Compares floating point numbers
+    """
+    close = abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
+    close_to_zero = is_close_to_zero(a) and is_close_to_zero(b)
+    return close or close_to_zero
+
+def allclose(A, B):
+    """
+    Compares matrices A and B and returns true if they are equal
+    """
+    dimA = A.shape[0]
+    dimB = B.shape[0]
+    if(dimA != dimB):
+        return False
+
+    for i in range(dimA):
+        for j in range(dimA):
+            A_r = A[i,j].real
+            A_c = A[i,j].imag
+            B_r = A[i,j].real
+            B_c = A[i,j].imag
+            if(not(isclose(A_r, B_r) and isclose(A_c, B_c))):
+                return False
+    return True
+
+
 def isMatrixSame(A, B):
     """
     Returns true if matrices A and B are equal
@@ -17,7 +52,8 @@ def isMatrixSame(A, B):
 
     for i in range(dimA[0]):
         for j in range(dimA[0]):
-            if(not isclose(A[i,j],B[i,j])):
+            c = isclose(A[i,j],B[i,j])
+            if(not c):
                 return False
     return True
 
@@ -74,21 +110,7 @@ def to_list(L):
     for arr in L:
         aList = arr.tolist()
         newList.append(aList)
-    #newList  = [L[i].tolist() for i in range(len(L))]
     return newList
-
-def is_close_to_zero(n):
-    """
-    Returns true if n is close to 0
-    """
-    return abs(n) <= 0.00001
-
-
-def isclose(a, b, rel_tol=1e-14, abs_tol=0.0):
-    """
-    Compares floating point numbers
-    """
-    return abs(a-b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
 
 def is_positive_semi_def(p):
@@ -98,7 +120,14 @@ def is_positive_semi_def(p):
     """
     values, _ = LA.eig(p)
     values = values.real
-    return np.all(values >= 0)
+    # number of elements in values that are 0
+    s = sum(is_close_to_zero(v) for v in values)
+    n = sum(np.isclose(v,1) for v in values)
+
+    # If s == len(values) - 1 and n = 1, then p is a pure state
+    pure_state = (s == len(values) -1) and (n == 1)
+
+    return np.all(values >= 0) or pure_state
 
 
 def allocSub(p):
@@ -156,7 +185,6 @@ def check_power(n, pow, func_str):
     """
 
     p = n ** (1. / pow)
-    print(n)
     if(not p.is_integer()):
         print("Error in Function '" + func_str +"':")
         print("n is not to the specified power")
@@ -172,11 +200,13 @@ def check_power_of_dim(n,dim,func_str):
     """
 
     m = math.log(n)
-    n = math.log(dim)
-    q = m / n
+    k = math.log(dim)
+    q = m / k
+
+    five_part_state = isclose(q,5)
 
     # Checks that q is an integer
-    if(q.is_integer()):
+    if(q.is_integer() or five_part_state):
         return q
     else:
         print("Error in Function '" + func_str +"':")

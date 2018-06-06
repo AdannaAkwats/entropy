@@ -17,10 +17,10 @@ def new_eq1(pABC,dim):
     """
 
     # Ensure that system is a 3 qubit/qutrit quantum system
-    check_n_q(pABC, dim, 3, "new_eq1 in entropy.py")
+    check_n_q(pABC, dim, 3, "new_eq1 in other_eqs_quantum.py")
 
     # I(A:C|B) = H(A,B)-H(B)-H(A,B,C)-H(B,C)
-    seps,joint,_ = separate(pABC,dim)
+    seps,joint,_,_ = separate(pABC,dim)
     pB = seps[1]
     pAB = joint[0]
     pBC = joint[1]
@@ -41,11 +41,11 @@ def new_eq1(pABC,dim):
 def fidelity(p,r):
     """
     Calculates fidelity between quantum states p and r
-    F = ||sqrt(pr)||^2 _1
+    F = ||sqrt(pr)||^2 _1 = tr(sqrt {sqrt(p)*r*sqrt(p)} )^2
     """
 
     # Checks that p and r have same size and are both square
-    check_same_size(p,r,"fidelity in entropy.py")
+    check_same_size(p,r,"fidelity in other_eqs_quantum.py")
 
     sqrt_p = np.sqrt(p)
     p_r_p = sqrt_p*r*sqrt_p

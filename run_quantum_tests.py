@@ -6,6 +6,12 @@ from non_shannon_quantum import *
 p_t = generate(8)
 p = generate_2(8)
 
+
+def test_many():
+    for i in range(100):
+        test_non_shannon_1()
+
+
 ######### INEQUALITIES
 def test_random_density_matrix_is_density_matrix_1():
     """
@@ -62,7 +68,7 @@ def test_pure_state_entropy_is_zero():
     """
     Returns true if vonNeumann entropy of pure state is zero
     """
-    pure = generate_pure_state_2(4)
+    pure = generate_pure_state(4)
     vn = vonNeumann(pure)
     assert is_close_to_zero(vn) == True
 
@@ -73,6 +79,8 @@ def test_relative_entropy_non_negative():
     """
     r = generate(8)
     assert is_non_neg_relative_entropy(p,r) == True
+    # Relative entropy h(p || p) = 0
+    assert is_close_to_zero(relative_entropy(p, p)) == True
 
 def test_monotonicity_of_relative_entropy():
     """
@@ -127,7 +135,8 @@ def test_non_shannon_1():
     """
     Returns true if 2I(C:D) <= I(A:B) + I(A:C,D) + 3I(C:D|A) + I(C:D|B)
     """
-    assert non_shannon_1(p4, 2) == True
+    res,_ = non_shannon_1(p4, 2)
+    assert res == True
 
 def test_non_shannon_2():
     """
@@ -179,7 +188,8 @@ def test_non_shannon_1_q3():
     """
     Returns true if 2I(C:D) <= I(A:B) + I(A:C,D) + 3I(C:D|A) + I(C:D|B)
     """
-    assert non_shannon_1(p5, 3) == True
+    res,_ = non_shannon_1(p5, 3)
+    assert res == True
 
 def test_non_shannon_2_q3():
     """

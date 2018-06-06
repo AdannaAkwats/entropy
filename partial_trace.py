@@ -12,22 +12,28 @@ from utils import *
 # Separated systems are saved in list systems iself.e. pA, pB ...
 # systems = []
 
-# Intermediate joint systems are stored
+# Intermediate bi-partite systems are stored
 # Order for pABC:  pAB, pBC, pAC
 # Order for pABCD: pAB (0), pBC (1), pAC (2), pBD (3), pAD (4), pCD (5)
+# Order for pABCDE: pAB, pAC, pAD, pBC, pBD, pAE, pBE, pCD, pCE
 # joint_systems = []
 
-# Intermediate joint systems are stored
+# Intermediate  tri-partite systems are stored
 # Order for pABCD: pABC (0), pABD (1), pBCD (2), pACD (3)
+# Order for pABCDE: pABC (0), pABD (2), pACD (3) ,pBCD, pABE, pACE, pBCE, pADE,
+#                   pBDE, pCDE (9)
 # joint_systems3 = []
 
+# Intermediate 4-partite systems are stored
+# Order for pABCDE = pABCD (0), pABCE (1), pABDE (2), pBCDE (3), pACDE (4)
+# joint_sysems4 = []
 
 def separate(p,dim):
-    s, j, j3 = partial_trace(p, dim, [], [], [])
-    return s, j, j3
+    s, j, j3, j4 = partial_trace(p, dim, [], [], [], [])
+    return s, j, j3, j4
 
 
-def partial_trace(p, dim, systems, joint_systems, joint_systems3):
+def partial_trace(p, dim, systems, joint_systems, joint_systems3, joint_systems4):
     """
     Top level function that calls separate_qubit and separate_qutrit
     to get single qubit and qutrit systems
@@ -36,20 +42,21 @@ def partial_trace(p, dim, systems, joint_systems, joint_systems3):
     # Check matrix is square
     check_square_matrix(p, "separate")
 
+
     n = p.shape[0]
     n2 = p.shape[1]
     func_str = "separate in partial_trace.py"
     q = check_power_of_dim(n, dim, func_str)
 
     if(isPowerof2(dim)):
-        separate_qubit(p, systems, joint_systems, joint_systems3)
+        separate_qubit(p, systems, joint_systems, joint_systems3, joint_systems4)
     else:
-        separate_qutrit(p, systems, joint_systems, joint_systems3)
+        separate_qutrit(p, systems, joint_systems, joint_systems3, joint_systems4)
 
-    return systems, joint_systems, joint_systems3
+    return systems, joint_systems, joint_systems3, joint_systems4
 
 
-def separate_qubit(p, systems, joint_systems, joint_systems3):
+def separate_qubit(p, systems, joint_systems, joint_systems3, joint_systems4):
     """
     Function that separates joint pure qubit quantum state p. The density matrix
     width (and length) MUST be written as 2^q where q is the number of qubits
@@ -85,13 +92,14 @@ def separate_qubit(p, systems, joint_systems, joint_systems3):
 
     # p_ABC 3 qubits
     elif(q == 3):
-        __separate3(p, systems, joint_systems, joint_systems3)
+        __separate3(p, systems, joint_systems, joint_systems3, joint_systems4)
     elif(q == 4):
-        __separate4(p, systems, joint_systems, joint_systems3)
+        __separate4(p, systems, joint_systems, joint_systems3, joint_systems4)
+    elif(q == 5):
+        __separate5(p, systems, joint_systems, joint_systems3, joint_systems4)
 
 
-
-def __separate3(p, systems, joint_systems, joint_systems3):
+def __separate3(p, systems, joint_systems, joint_systems3, joint_systems4):
     """
     Private method that calculates partial trace of 3 qubit systems
     """
@@ -135,12 +143,12 @@ def __separate3(p, systems, joint_systems, joint_systems3):
         joint_systems.append(pAC)
 
     # Separate joint systems into single systems
-    separate_qubit(pAB, systems, joint_systems, joint_systems3)
-    separate_qubit(pBC, systems, joint_systems, joint_systems3)
-    separate_qubit(pAC, systems, joint_systems, joint_systems3)
+    separate_qubit(pAB, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qubit(pBC, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qubit(pAC, systems, joint_systems, joint_systems3, joint_systems4)
 
 
-def __separate4(p, systems, joint_systems, joint_systems3):
+def __separate4(p, systems, joint_systems, joint_systems3, joint_systems4):
     """
     Private method that calculates separate systems for 4 qubit systems
     """
@@ -200,15 +208,95 @@ def __separate4(p, systems, joint_systems, joint_systems3):
         joint_systems3.append(pACD)
 
     # Separate joint systems into single systems
-    separate_qubit(pABC, systems, joint_systems, joint_systems3)
-    separate_qubit(pABD, systems, joint_systems, joint_systems3)
-    separate_qubit(pBCD, systems, joint_systems, joint_systems3)
-    separate_qubit(pACD, systems, joint_systems, joint_systems3)
+    separate_qubit(pABC, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qubit(pABD, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qubit(pBCD, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qubit(pACD, systems, joint_systems, joint_systems3, joint_systems4)
 
+
+def __separate5(p, systems, joint_systems, joint_systems3, joint_systems4):
+    """
+    Private method that calculates separate systems for 5 qubit systems
+    """
+
+    # pABCD
+    pABCD = allocSub(p)
+
+    # dimensions of each sub matrix
+    sub_dim = pABCD.shape[0]
+
+    x_ABCD = [2*x for x in range(sub_dim)]
+    y_ABCD = [x+(2**0) for x in x_ABCD]
+
+    # pABCE
+    pABCE = allocSub(p)
+    x_ABCE = [0 for x in range(sub_dim)]
+    for i in range(1,sub_dim):
+        if((i%2) == 0):
+            x_ABCE[i] = x_ABCE[i-1] + (2 + 1)
+        else:
+            x_ABCE[i] = x_ABCE[i-1] + 1
+
+    y_ABCE = [x+(2**1) for x in x_ABCE]
+
+    # pABDE
+    pABDE = allocSub(p)
+    x_ABDE = [0 for x in range(sub_dim)]
+    for i in range(1,sub_dim):
+        if((i%4) == 0):
+            x_ABDE[i] = x_ABDE[i-1] + (2*2 + 1)
+        else:
+            x_ABDE[i] = x_ABDE[i-1] + 1
+
+    y_ABDE = [x+(2**2) for x in x_ABDE]
+
+    # pACDE
+    pACDE = allocSub(p)
+    x_ACDE = [0 for x in range(sub_dim)]
+    for i in range(1,sub_dim):
+        if((i%8) == 0):
+            x_ACDE[i] = x_ACDE[i-1] + (4*2 + 1)
+        else:
+            x_ACDE[i] = x_ACDE[i-1] + 1
+
+    y_ACDE = [x+(2**3) for x in x_ACDE]
+
+    # pBCD
+    pBCDE = allocSub(p)
+    x_BCDE = [x for x in range(sub_dim)]
+    y_BCDE = [x+(2**4) for x in x_BCDE]
+
+    # Fill in matrix pABC, pABD, pBCD and pACD
+    for i in range(sub_dim):
+        for j in range(sub_dim):
+            pABCD[i,j] = p[x_ABCD[i],x_ABCD[j]] + p[y_ABCD[i],y_ABCD[j]]
+            pABCE[i,j] = p[x_ABCE[i],x_ABCE[j]] + p[y_ABCE[i],y_ABCE[j]]
+            pABDE[i,j] = p[x_ABDE[i],x_ABDE[j]] + p[y_ABDE[i],y_ABDE[j]]
+            pBCDE[i,j] = p[x_BCDE[i],x_BCDE[j]] + p[y_BCDE[i],y_BCDE[j]]
+            pACDE[i,j] = p[x_ACDE[i],x_ACDE[j]] + p[y_ACDE[i],y_ACDE[j]]
+
+    # Storing intermediiate joint systems
+    if(not matrixInList(pABCD, joint_systems4)):
+        joint_systems4.append(pABCD)
+    if(not matrixInList(pABCE, joint_systems4)):
+        joint_systems4.append(pABCE)
+    if(not matrixInList(pABDE, joint_systems4)):
+        joint_systems4.append(pABDE)
+    if(not matrixInList(pBCDE, joint_systems4)):
+        joint_systems4.append(pBCDE)
+    if(not matrixInList(pACDE, joint_systems4)):
+        joint_systems4.append(pACDE)
+
+    # Separate joint systems into single systems
+    separate_qubit(pABCD, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qubit(pABCE, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qubit(pABDE, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qubit(pBCDE, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qubit(pACDE, systems, joint_systems, joint_systems3, joint_systems4)
 
 
 # Separate qutrit <0|, <1|, <2|
-def separate_qutrit(p, systems, joint_systems, joint_systems3):
+def separate_qutrit(p, systems, joint_systems, joint_systems3, joint_systems4):
     """
     Function that separates joint pure qutrit quantum state p. The density
     matrix width (and length) MUST be written as 3^q where q is the number
@@ -250,12 +338,14 @@ def separate_qutrit(p, systems, joint_systems, joint_systems3):
 
     # p_ABC 3 qutrits
     elif(q == 3):
-        __separate3_qutrit(p, systems, joint_systems, joint_systems3)
+        __separate3_qutrit(p, systems, joint_systems, joint_systems3, joint_systems4)
     elif(q == 4):
-        __separate4_qutrit(p, systems, joint_systems, joint_systems3)
+        __separate4_qutrit(p, systems, joint_systems, joint_systems3, joint_systems4)
+    elif(q == 5 or isclose(q,5)):
+        __separate5_qutrit(p, systems, joint_systems, joint_systems3, joint_systems4)
 
 
-def __separate3_qutrit(p, systems, joint_systems, joint_systems3):
+def __separate3_qutrit(p, systems, joint_systems, joint_systems3, joint_systems4):
     """
     Private method that calculates separate systems for 3 qutrit systems
     """
@@ -303,12 +393,12 @@ def __separate3_qutrit(p, systems, joint_systems, joint_systems3):
         joint_systems.append(pAC)
 
     # Recursively separate further
-    separate_qutrit(pAB, systems, joint_systems, joint_systems3)
-    separate_qutrit(pBC, systems, joint_systems, joint_systems3)
-    separate_qutrit(pAC, systems, joint_systems, joint_systems3)
+    separate_qutrit(pAB, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qutrit(pBC, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qutrit(pAC, systems, joint_systems, joint_systems3, joint_systems4)
 
 
-def __separate4_qutrit(p, systems, joint_systems, joint_systems3):
+def __separate4_qutrit(p, systems, joint_systems, joint_systems3, joint_systems4):
     """
     Private method that calculates separate systems for 4 qutrit systems
     """
@@ -371,7 +461,90 @@ def __separate4_qutrit(p, systems, joint_systems, joint_systems3):
 
 
     # Recursively separate further
-    separate_qutrit(pABC, systems, joint_systems, joint_systems3)
-    separate_qutrit(pABD, systems, joint_systems, joint_systems3)
-    separate_qutrit(pBCD, systems, joint_systems, joint_systems3)
-    separate_qutrit(pACD, systems, joint_systems, joint_systems3)
+    separate_qutrit(pABC, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qutrit(pABD, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qutrit(pBCD, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qutrit(pACD, systems, joint_systems, joint_systems3, joint_systems4)
+
+
+def __separate5_qutrit(p, systems, joint_systems, joint_systems3, joint_systems4):
+    """
+    Private method that calculates separate systems for 5 qutrit systems
+    """
+
+    #pABCD
+    pABCD = allocSub(p)
+    sub_dim = pABCD.shape[0]
+    x_ABCD = [3*x for x in range(sub_dim)]
+    y_ABCD = [x+(3**0) for x in x_ABCD]
+    z_ABCD = [x+(3**0) for x in y_ABCD]
+
+    #pABCE
+    pABCE = allocSub(p)
+    x_ABCE = [0 for x in range(sub_dim)]
+    for i in range(1,sub_dim):
+        if((i%3) == 0):
+            x_ABCE[i] = x_ABCE[i-1] + (3*2 + 1)
+        else:
+            x_ABCE[i] = x_ABCE[i-1] + 1
+
+    y_ABCE = [x+(3**1) for x in x_ABCE]
+    z_ABCE = [x+(3**1) for x in y_ABCE]
+
+    #pABDE
+    pABDE = allocSub(p)
+    x_ABDE = [0 for x in range(sub_dim)]
+    for i in range(1,sub_dim):
+        if((i%9) == 0):
+            x_ABDE[i] = x_ABDE[i-1] + (9*2 + 1)
+        else:
+            x_ABDE[i] = x_ABDE[i-1] + 1
+
+    y_ABDE = [x+(3**2) for x in x_ABDE]
+    z_ABDE = [x+(3**2) for x in y_ABDE]
+
+    #pACDE
+    pACDE = allocSub(p)
+    x_ACDE  = [0 for x in range(sub_dim)]
+    for i in range(1,sub_dim):
+        if((i%27) == 0):
+            x_ACDE [i] = x_ACDE[i-1] + (27*2 + 1)
+        else:
+            x_ACDE [i] = x_ACDE[i-1] + 1
+
+    y_ACDE = [x+(3**3) for x in x_ACDE]
+    z_ACDE = [x+(3**3) for x in y_ACDE]
+
+    #pBCDE
+    pBCDE = allocSub(p)
+    x_BCDE = [x for x in range(sub_dim)]
+    y_BCDE = [x+(3**4) for x in x_BCDE]
+    z_BCDE = [x+(3**4) for x in y_BCDE]
+
+    # Fill in matrix pABCD, pABCE, pABDE, pBCDE and pACDE
+    for i in range(sub_dim):
+        for j in range(sub_dim):
+            pABCD[i,j] = p[x_ABCD[i],x_ABCD[j]] + p[y_ABCD[i],y_ABCD[j]] + p[z_ABCD[i],z_ABCD[j]]
+            pABCE[i,j] = p[x_ABCE[i],x_ABCE[j]] + p[y_ABCE[i],y_ABCE[j]] + p[z_ABCE[i],z_ABCE[j]]
+            pABDE[i,j] = p[x_ABDE[i],x_ABDE[j]] + p[y_ABDE[i],y_ABDE[j]] + p[z_ABDE[i],z_ABDE[j]]
+            pBCDE[i,j] = p[x_BCDE[i],x_BCDE[j]] + p[y_BCDE[i],y_BCDE[j]] + p[z_BCDE[i],z_BCDE[j]]
+            pACDE[i,j] = p[x_ACDE[i],x_ACDE[j]] + p[y_ACDE[i],y_ACDE[j]] + p[z_ACDE[i],z_ACDE[j]]
+
+    # Storing intermediiate joint systems
+    if(not matrixInList(pABCD, joint_systems4)):
+        joint_systems4.append(pABCD)
+    if(not matrixInList(pABCE, joint_systems4)):
+        joint_systems4.append(pABCE)
+    if(not matrixInList(pABDE, joint_systems4)):
+        joint_systems4.append(pABDE)
+    if(not matrixInList(pBCDE, joint_systems4)):
+        joint_systems4.append(pBCDE)
+    if(not matrixInList(pACDE, joint_systems4)):
+        joint_systems4.append(pACDE)
+
+    # Recursively separate further
+    separate_qutrit(pABCD, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qutrit(pABCE, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qutrit(pABDE, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qutrit(pBCDE, systems, joint_systems, joint_systems3, joint_systems4)
+    separate_qutrit(pACDE, systems, joint_systems, joint_systems3, joint_systems4)

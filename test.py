@@ -2,7 +2,7 @@ import numpy as np
 from numpy import linalg as LA
 import math
 import random
-import timeit
+import time
 
 from shannon import *
 from separate_probs import *
@@ -39,49 +39,99 @@ pp = randomProbabilityDist(2**4)
 # print s[1]
 # print s[2]
 
-# print ""
-# print strongSubadditivity(pp)
-# #print test_true(strongSubadditivity,pp,100)
-# print and_mutual_information_s(pp)
-# #print cond_mutual_information_s
-# print ""
-# q = randomProbabilityDist(2**3)
-# print_seps(pp)
+
+#p = generate(2**5)
+# # print(p)
+# # print("")
+# s,j,j3,j4 = separate(p,2)
+# print(len(j4))
+# print(j4[0].shape)
+# print(len(j3))
+# print(j3[0].shape)
+# print(len(j))
+# print(vonNeumann(j3[0]))
+# print(vonNeumann(j3[1]))
+# print(vonNeumann(j3[2]))
+# print(vonNeumann(j3[3]))
+# print(vonNeumann(j3[4]))
+# print(vonNeumann(j3[5]))
+# print(vonNeumann(j3[6]))
+# print(vonNeumann(j3[7]))
+# print(vonNeumann(j3[8]))
+# print(vonNeumann(j3[9]))
+# print("")
+# print(j[0].shape)
+# print(len(s))
+# print(s[0].shape)
+
+# print(s)
+# print(j)
 
 
-# s, j, j3 = separate_probs(q)
-# print j3[0].sum()#pABC
-# print j3[1] #pABD
-# print ""
-# s1, j1, j31 = separate_probs(j3[0])
-# print s1
-# print ""
-# s2, j2, j32 = separate_probs(j3[1])
-# print s2
-# print ""
-# print_seps(q)
+#
+# print(p.shape)
+# print(is_hermitian(p))
+# print(is_positive_semi_def(p))
+# print(np.trace(p))
+# print(vonNeumann(p))
+print("entangled:")
+# ent = 0
+# for i in range(100):
+#     p = generate_3(2**4, 2)
+#     if(is_entangled_ABCD(p, 2,2)):
+#         ent = ent + 1
+#
+# print(ent)
 
-# print new_eq1_s(pp)
-# print new_eq2_s(pp)
-# print new_eq3_s(pp)
-# print new_eq4_s(pp)
-# print new_eq5_s(pp)
-# print new_eq6_s(pp)
-# print new_eq7_s(pp)
-# print ""
-# print non_shannon_eqs(pp,0)
+p = generate_3(2**3)
+print(p.shape)
+# print (5.0).is_integer()
+#
+print mixed_entangled_bipartite(generate_3, 10, 2)
+#print mixed_entangled_joint(3, 2, 1, 20)
+
+
 
 
 ########### Generate matrices #########################
 # t = timeit.Timer("generate(4)", "from generate_random_quantum import generate")
-# print("Time taken for generate_1: " + str(t.timeit()))
+# print("--- %s seconds ---" % (t.timeit()))
 # s = timeit.Timer("generate_2(4)", "from generate_random_quantum import generate_2")
-# print("Time taken for generate_2 :" + str(s.timeit()))
+# print("--- %s seconds ---" % (s.timeit()))
 
 
-# p = generate_2(3**4)
+
+# for i in range(3000):
+#     p = generate_2(2**2)
+#     s,_,_ = separate(p,2)
+#     pure = vonNeumann(p)
+#     entangled = is_entangled(p, s[1])
+#     if(entangled):
+#         print(i)
+#         print(entangled)
+#         print("Less than 0")
+
+# g = generate_pure_state_2(4)
+# print(vonNeumann(g))
+
+
+# p = generate(2**4)
+# print is_entangled_ABCD(p, 2, 3)
+# s,_,_ = separate()
+
+# print(is_entangled(g))
+
 # print non_shannon_1(p, 3)
 #print and_mutual_information(p,3)
+# start_time = time.clock()
+# p = generate(4)
+# print("generate(4): --- %s seconds ---" % (time.clock() - start_time))
+#
+# start_time = time.clock()
+# p = generate_2(4)
+# print("generate_2(4): --- %s seconds ---" % (time.clock() - start_time))
+
+#print non_shannon_1(p, 3)
 
 
 #
