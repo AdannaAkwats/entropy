@@ -284,6 +284,42 @@ def strong_subadditivity_q(pABC,dim):
 
     return H_ABC + H_B <= H_AB + H_BC
 
+def bell_states(n):
+    """
+    Returns Bell's states
+    n = 1: Return (|00> + |11>)/sqrt(2)
+    n = 2: Return (|00> - |11>)/sqrt(2)
+    n = 3: Return (|01> + |10>)/sqrt(2)
+    n = 4: Return (|01> - |10>)/sqrt(2)
+    """
+    p = np.zeros((4,4))
+    if(n == 1):
+        p[0,0] = 0.5
+        p[0,3] = 0.5
+        p[3,0] = 0.5
+        p[3,3] = 0.5
+    elif(n == 2):
+        p[0,0] = 0.5
+        p[0,3] = -0.5
+        p[3,0] = -0.5
+        p[3,3] = 0.5
+    elif(n == 3):
+        p[1,1] = 0.5
+        p[1,2] = 0.5
+        p[2,1] = 0.5
+        p[2,2] = 0.5
+    elif(n == 4):
+        p[1,1] = 0.5
+        p[1,2] = -0.5
+        p[2,1] = -0.5
+        p[2,2] = 0.5
+    else:
+        print("Error in function 'bell_states' in entropy.py")
+        print("bell state number given is not valid.")
+        sys.exit()
+    return p
+
+
 def is_entangled(pAB, pB):
     """
     Returns true if p is entangled in A : B. If H(AB) - H(B) < 0
@@ -292,6 +328,29 @@ def is_entangled(pAB, pB):
     H_B = vonNeumann(pB)
 
     return (H_AB - H_B) < 0
+
+
+def is_bell_state_max_entangled(n):
+    """
+    Returns true if bell states are maximally entangled
+    0 < n <= 4 represents bell states; go to function bell_states in entropy.py
+    """
+    p = bell_states(n)
+    V = vonNeumann(p)
+    if(not np.isclose(V,0)): # Bell states are pure states
+        return False
+
+    s,_,_,_ = separate(p,2)
+
+    # In bell state, separated pA = pB
+    if(not is_entangled(p, s[0])):
+        return False
+
+    # Maximally entangled if H = log d
+    H = vonNeumann(s[0])
+    if(H == np.log2(s[0].shape[0])):
+        return True
+    return False
 
 
 def mixed_entangled_bipartite(gen_func, lim, dim):

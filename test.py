@@ -74,7 +74,21 @@ pp = randomProbabilityDist(2**4)
 # print(is_positive_semi_def(p))
 # print(np.trace(p))
 # print(vonNeumann(p))
+
+
+
+
 print("entangled:")
+b = bell_states(2)
+print b
+print vonNeumann(b)
+print ""
+s, _,_,_ = separate(b,2)
+
+print is_bell_state_max_entangled(1)
+
+
+
 # ent = 0
 # for i in range(100):
 #     p = generate_3(2**4, 2)
@@ -83,13 +97,13 @@ print("entangled:")
 #
 # print(ent)
 
-p = generate_3(2**3)
-print(p.shape)
-# print (5.0).is_integer()
+# p = generate_3(2**3)
+# print(p.shape)
+# # print (5.0).is_integer()
+# #
+# print mixed_entangled_bipartite(generate_3, 10, 2)
+# #print mixed_entangled_joint(3, 2, 1, 20)
 #
-print mixed_entangled_bipartite(generate_3, 10, 2)
-#print mixed_entangled_joint(3, 2, 1, 20)
-
 
 
 
