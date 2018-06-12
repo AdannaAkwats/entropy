@@ -284,6 +284,179 @@ def strong_subadditivity_q(pABC,dim):
 
     return H_ABC + H_B <= H_AB + H_BC
 
+def triangle_inequality(pAB,dim):
+    """
+    Returns true if S(AB) >= |S(A) - S(B)|
+    """
+
+    # Ensure that system is a 2 qubit/qutrit quantum system
+    check_n_q(pAB, dim, 2, "triangle_inequality in entropy.py")
+
+    systems, _, _,_ = separate(pAB,dim)
+    pA = systems[0]
+    pB = systems[1]
+    H_A = vonNeumann(pA)
+    H_B = vonNeumann(pB)
+    H_AB = vonNeumann(pAB)
+
+    return H_AB >= np.absolute(H_A - H_B)
+
+def cond_triangle_inequality(pABC, dim):
+    """
+    Returns true if S(A|BC) >= S(A|C) - S(B|C)
+    """
+
+    # Ensure that system is a 3 qubit/qutrit quantum system
+    check_n_q(pABC, dim, 3, "cond_triangle_inequality in entropy.py")
+
+    systems, joint_systems,_,_ = separate(pABC,dim)
+    pBC = joint_systems[1]
+    pAC = joint_systems[2]
+    pC = systems[2]
+
+    H_ABC = vonNeumann(pABC)
+    H_AC = vonNeumann(pAC)
+    H_BC = vonNeumann(pBC)
+    H_C = vonNeumann(pC)
+
+    H_AB_C = H_ABC - H_BC
+    H_A_C = H_AC - H_C
+    H_B_C = H_BC - H_C
+
+    return H_AB_C >= H_A_C + H_B_C
+
+def cond_reduce_entropy(pABC, dim):
+    """
+    Returns true if H(A|BC) <= H(A|B)
+    """
+
+    systems, joint_systems,_,_ = separate(pABC,dim)
+    pA = systems[0]
+    pB = systems[1]
+    pBC = joint_systems[1]
+
+    H_A = vonNeumann(pA)
+    H_B = vonNeumann(pB)
+    h_BC = vonNeumann(pBC)
+    H_ABC = vonNeumann(pABC)
+
+    H_A_BC = H_ABC - H_BC
+    H_A_B = H_A - H_B
+
+    return H_A_BC <= H_A_B
+
+
+def mutual_info_not_increase(pABC, dim):
+    """
+    Returns true if I(A:B) <= I(A:BC)
+    """
+    systems, joint_systems,_,_ = separate(pABC,dim)
+    pA = systems[0]
+    pB = systems[1]
+    pAB = joint_systems[0]
+    pBC = joint_systems[1]
+
+    H_A = vonNeumann(pA)
+    H_B = vonNeumann(pB)
+    H_AB = vonNeumann(pAB)
+    H_BC = vonNeumann(pBC)
+    H_ABC = vonNeumann(pABC)
+
+    H_A_BC = H_A + H_BC - H_ABC
+    H_A_B = H_A + H_B - H_AB
+
+    return H_A_B <= H_A_BC
+
+
+def subadditivity_of_cond_1(pABCD, dim):
+    """
+    Returns true if H(AB|CD) <= H(A|C) + H(B|D)
+    """
+
+    systems, joint_systems,_,_ = separate(pABC,dim)
+    pC = systems[2]
+    pAC = joint_systems[2]
+    pBD = joint_systems[3]
+    pCD = joint_systems[5]
+
+    H_C = vonNeumann(pC)
+    H_AC = vonNeumann(pAC)
+    H_BD = vonNeumann(pBD)
+    H_CD = vonNeumann(pCD)
+
+    H_B_C = H_BD - H_C
+    H_A_C = H_AC - H_C
+    H_AB_CD = H_ABCD - H_CD
+
+
+def subadditivity_of_cond_2(pABC, dim):
+    """
+    Returns S(AB|C) <= S(A|C) + S(B|C)
+    """
+    s,j,_,_ = separate(pABC, dim)
+    pC = s[2]
+    pBC = j[1]
+    pAC = j[2]
+
+    H_C = vonNeumann(pC)
+    H_BC = vonNeumann(pBC)
+    H_AC= vonNeumann(pAC)
+    H_ABC = vonNeumann(pABC)
+
+    H_B_C = H_BC - H_C
+    H_A_C = H_AC - H_C
+    H_AB_C = H_ABC - H_C
+
+    return H_AB_C <= H_A_C + H_B_C
+
+
+def subadditivity_of_cond_3(pABC, dim):
+    """
+    Returns S(A|BC) <= S(A|B) + S(A|C)
+    """
+    s,j,_,_ = separate(pABC, dim)
+    pB = s[1]
+    pAB = j[0]
+    pAC = j[2]
+
+    H_B = vonNeumann(pB)
+    H_AB = vonNeumann(pAB)
+    H_AC= vonNeumann(pAC)
+    H_ABC = vonNeumann(pABC)
+
+    H_A_B = H_AB - H_B
+    H_A_C = H_AC - H_C
+    H_A_BC = H_ABC - H_BC
+
+    return H_A_BC <= H_A_B + H_A_C
+
+
+
+def cond_strong_subadditivity(pABCD, dim):
+    """
+    Returns S(ABC|D) + S(B|D) <= S(AB|D) + S(BC|D)
+    """
+
+    systems, joint_systems,j3,_ = separate(pABC,dim)
+    pD = systems[3]
+    pBD = joint_systems[3]
+    pABD = j3[1]
+    pBCD = j3[2]
+
+    H_BCD = vonNeumann(pBCD)
+    H_ABD = vonNeumann(pABD)
+    H_BD = vonNeumann(pBD)
+    H_D = vonNeumann(pD)
+    H_ABCD = vonNeumann(pABCD)
+
+    H_BC_D = H_BCD - H_D
+    H_AB_D = H_ABD - H_D
+    H_B_D = H_BD - H_D
+    H_ABC_D = H_ABCD - H_D
+
+    return H_ABC_D + H_B_D <= H_AB_D + H_BC_D
+
+
 def bell_states(n):
     """
     Returns Bell's states
@@ -317,6 +490,24 @@ def bell_states(n):
         print("Error in function 'bell_states' in entropy.py")
         print("bell state number given is not valid.")
         sys.exit()
+    return p
+
+def GHZ_states(M, dim):
+    """
+    Returns GHZ states |u> = 1/sqrt(2) (|0>^M + |1>^M), where M>= 3
+    """
+    if(M < 3):
+        print("Error in function 'GHZ_states' in entropy.py")
+        print("M should be more than or equal to 3")
+        sys.exit()
+
+    n = dim**M
+    p = np.zeros((n,n))
+    p[0,0] = 0.5
+    p[0,n-1] = 0.5
+    p[n-1,0] = 0.5
+    p[n-1,n-1] = 0.5
+
     return p
 
 
