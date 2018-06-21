@@ -144,7 +144,7 @@ def generate(n):
 def generate_2(n):
     """
     Generate random nxn density matrix A.
-    Note: This is a faster implementation than generate_1(n)
+    Note: This is a faster implementation than generate(n)
     Motivated by: article https://arxiv.org/pdf/math-ph/0609050.pdf page 3
     """
     assert n != 0

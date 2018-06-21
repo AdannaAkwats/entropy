@@ -52,10 +52,10 @@ def separate_main(p, systems, joint_systems, joint_systems3):
         print("Probability list length is not a square, cube or to the 4th power")
         sys.exit()
 
-    s = remove_dups_list(systems)
-    j = remove_dups_list(joint_systems)
-    js = remove_dups_list(joint_systems3)
-    return s, j, js
+    # systems = remove_dups_list(systems)
+    # joint_systems = remove_dups_list(joint_systems)
+    # joint_systems3 = remove_dups_list(joint_systems3)
+    return systems, joint_systems, joint_systems3
 
 
 def __separate_2(pAB, systems, joint_systems, joint_systems3):

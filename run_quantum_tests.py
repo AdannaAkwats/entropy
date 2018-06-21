@@ -6,12 +6,6 @@ from non_shannon_quantum import *
 p_t = generate(8)
 p = generate_2(8)
 
-
-def test_many():
-    for i in range(100):
-        test_non_shannon_1()
-
-
 ######### INEQUALITIES
 def test_random_density_matrix_is_density_matrix_1():
     """

@@ -52,6 +52,7 @@ def subadditivity(Pxy):
     H_X = shannon(px)
     H_Y = shannon(py)
     H_XY = shannon(Pxy)
+
     return H_XY <= H_X + H_Y
 
 

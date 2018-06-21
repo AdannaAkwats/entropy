@@ -85,6 +85,7 @@ def separate_qubit(p, systems, joint_systems, joint_systems3, joint_systems4):
                 pA[i,j] = p[x_A[i],x_A[j]] + p[y_A[i],y_A[j]]
                 pB[i,j] = p[x_B[i],x_B[j]] + p[y_B[i],y_B[j]]
 
+
         if(not matrixInList(pA, systems)):
             systems.append(pA)
         if(not matrixInList(pB, systems)):

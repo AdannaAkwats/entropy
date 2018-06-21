@@ -10,9 +10,6 @@ from generate_random_quantum import generate_hermitian
 from utils import *
 
 
-# Unitary Evolution
-# ------------------------------------------------------------------------
-
 def u_p_u(U, p):
     """
     Quantum operator e
@@ -177,6 +174,14 @@ def is_CPTP_entropy_more(op, p, prob):
     H_e = vonNeumann(evolved_p)
 
     return (H_e > H_p) or isclose(H_e, H_p)
+
+def CTPT_entropy(op, p, prob):
+    H_p = vonNeumann(p)
+    # Evolve p
+    evolved_p = op(p, prob)
+    H_e = vonNeumann(evolved_p)
+    return H_p, H_e
+
 
 def is_unital(op, n):
     """

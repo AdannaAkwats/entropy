@@ -14,6 +14,7 @@ from utils import *
 def non_shannon_1(pABCD,dim):
     """
     Returns true if:
+    Zhang-Yeung inequality
     2I(C:D) <= I(A:B) + I(A:C,D) + 3I(C:D|A) + I(C:D|B)
     """
 
@@ -39,6 +40,45 @@ def non_shannon_1(pABCD,dim):
     diff = RHS - LHS
 
     return LHS <= RHS, diff
+
+def non_shannon_1_ghz(pABCD,dim):
+    """
+    Returns true if:
+    Zhang-Yeung inequality
+    2I(C:D) <= I(A:B) + I(A:C,D) + 3I(C:D|A) + I(C:D|B)
+    """
+
+    # Ensure that system is a 4 qubit/qutrit quantum system
+    check_n_q(pABCD, dim, 4, "new_eq2 in entropy.py")
+
+    s,j,j3,_ = separate(pABCD,dim)
+    pABC, pABD, pBCD, pACD = j3[0], j3[0], j3[0], j3[0]
+    pAB, pBC, pAC, pBD, pAD, pCD = j[0], j[0], j[0], j[0], j[0], j[0]
+    pA, pB, pC, pD = s[0], s[0], s[0], s[0]
+
+    H_C = vonNeumann(pC)
+    H_D = vonNeumann(pD)
+    H_CD = vonNeumann(pCD)
+    I_C_D = H_C + H_D - H_CD        # I(C:D)
+    H_A = vonNeumann(pA)
+    H_B = vonNeumann(pB)
+    H_AB = vonNeumann(pAB)
+    I_A_B = H_A + H_B - H_AB         # I(A:B)
+    H_ABC = vonNeumann(pABC)
+    I_ACD = H_A + H_AB - H_ABC   # I(A:C,D)
+
+    I_CD_A = H_AB + H_AB - H_A - H_ABC # I(C:D|A)
+    I_CD_B = H_AB + H_AB - H_A - H_ABC# I(C:D|B)
+
+    LHS = 2*I_C_D
+    RHS = I_A_B + I_ACD + 3*I_CD_A + I_CD_B
+
+    # How close is it to 0?
+    diff = RHS - LHS
+
+    return LHS <= RHS, diff
+
+
 
 
 # Theorem III.1

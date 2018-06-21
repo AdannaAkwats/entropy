@@ -27,7 +27,6 @@ def vonNeumann(A):
     for v in values:
         if not is_close_to_zero(v):
             x += v*np.log2(v)
-    #v = values*np.log2(values)
     return -np.sum(x)
 
 
@@ -36,8 +35,8 @@ def is_non_neg_VN(A):
     Returns true if vonNeumann entropy >= 0
     """
 
-    H = vonNeumann(A)
-    return H > 0 or is_close_to_zero(H)
+    S = vonNeumann(A)
+    return S > 0 or is_close_to_zero(S)
 
 
 def is_vn_leq_log(A):
@@ -45,24 +44,23 @@ def is_vn_leq_log(A):
     Returns true if in a d-dim Hibert space the entropy is at most log(d)
     """
     dim = A.shape[0]
-    H = vonNeumann(A)
+    S = vonNeumann(A)
     l = np.log2(dim)
 
-    return H < l or np.isclose(H, l)
+    return S < l or np.isclose(S, l)
 
 
 def H_X_leq_H_XY(p):
     """
-    Returns true if shannon equation H(X) <= H(XY)
-    Note: This should fail to hold for von Neumann entropy by page 541 in book:
-    Quantum Compuation and Quantum Information
+    Returns true if shannon inequality H(X) <= H(XY) holds
+    Note: This should fail to hold for von Neumann entropy if state entangled
     """
     sys, _, _, _ = separate(p, 2)
     pA = sys[0]
-    H_A = vonNeumann(pA)
-    H_AB = vonNeumann(p)
+    S_A = vonNeumann(pA)
+    S_AB = vonNeumann(p)
 
-    return H_A <= H_AB
+    return S_A <= S_AB
 
 
 def is_non_neg_relative_entropy(p,r):
@@ -75,7 +73,7 @@ def is_non_neg_relative_entropy(p,r):
 
 def conditional_entropy(pAB,dim):
     """
-    calculates the conditional entropy: H(A|B) = H(A,B) - H(B)
+    calculates the conditional entropy: S(A|B) = S(A,B) - S(B)
     """
 
     # Ensure that system is a 2 qubit/qutrit quantum system
@@ -83,16 +81,16 @@ def conditional_entropy(pAB,dim):
 
     s, _,_, _ = separate(pAB,dim)
     pB = s[1]
-    H_B = vonNeumann(pB)
-    H_AB = vonNeumann(pAB)
+    S_B = vonNeumann(pB)
+    S_AB = vonNeumann(pAB)
 
-    return H_AB - H_B
+    return S_AB - S_B
 
 
 def relative_entropy(p,r):
     """
     Calculates the relative entropy of quantum state p to quantum state r
-    H(p||r) = tr(p log p) - tr(p log r)
+    S(p||r) = tr(p log p) - tr(p log r)
     """
 
     # Checks that p and r have same size and are both square
@@ -110,65 +108,33 @@ def relative_entropy(p,r):
     B = eign_p*l
     B = np.sum(B)
 
-    # H(p||r)
+    # S(p||r)
     return A - B
 
 
 def monotocity_relative_entropy(pAB, rAB, dim):
     """
-    Returns true if relative entropy is monotonic i.e. H(pA || rA) <= H(pAB || rAB)
+    Returns true if relative entropy is monotonic i.e. S(pA || rA) <= S(pAB || rAB)
     """
 
     # Checks that pAB and rAB have same size and are both square
     check_same_size(pAB,rAB,"monotocity_relative_entropy in entropy.py")
 
-    H_AB = relative_entropy(pAB,rAB)
+    S_AB = relative_entropy(pAB,rAB)
     s_p,_,_,_ = separate(pAB,dim)
     s_r,_,_,_= separate(rAB,dim)
 
     pA = s_p[0]
     rA = s_r[0]
 
-    H_A = relative_entropy(pA, rA)
+    S_A = relative_entropy(pA, rA)
 
-    return H_A <= H_AB
-
-
-# def monotocity_relative_entropy(pAB, rAB, dim):
-#     """
-#     Returns true if relative entropy is monotonic i.e. H(pA || rA) <= H(pAB || rAB)
-#     """
-#
-#     # Checks that pAB and rAB have same size and are both square
-#     check_same_size(pAB,rAB,"monotocity_relative_entropy in entropy.py")
-#
-#     H_AB = relative_entropy(pAB,rAB)
-#     s_p,j_p,j3_p = separate(pAB,dim)
-#     s_r,j_r,j3_r = separate(rAB,dim)
-#
-#     pA = []
-#     rA = []
-#     if(len(j3_p) == 0):
-#         if(len(j_p) == 0):
-#             pA = s_p[0]
-#             rA = s_r[0]
-#         else:
-#             k = np.random.randint(len(j_p))
-#             pA = j_p[k]
-#             rA = j_r[k]
-#     else:
-#         h = np.random.randint(len(j3_p))
-#         pA = j3_p[h]
-#         rA = j3_r[h]
-#
-#     H_A = relative_entropy(pA, rA)
-#
-#     return H_A <= H_AB
+    return (S_A < S_AB) or np.isclose(S_A, S_AB)
 
 
 def mutual_information(pAB,dim):
     """
-    calculates the mutual information defined by: I(A:B) = H(A) + H(B) - H(A,B)
+    calculates the mutual information defined by: I(A:B) = S(A) + S(B) - S(A,B)
     """
     # Ensure that system is a 2 qubit/qutrit quantum system
     check_n_q(pAB, dim, 2, "mutual_information in entropy.py")
@@ -176,22 +142,22 @@ def mutual_information(pAB,dim):
     systems, _, _,_ = separate(pAB,dim)
     pA = systems[0]
     pB = systems[1]
-    H_A = vonNeumann(pA)
-    H_B = vonNeumann(pB)
-    H_AB = vonNeumann(pAB)
+    S_A = vonNeumann(pA)
+    S_B = vonNeumann(pB)
+    S_AB = vonNeumann(pAB)
 
-    return H_A + H_B - H_AB
+    return S_A + S_B - S_AB
 
 def bound_mutual_information(pAB,dim):
     """
-    ensures that mutual information is within bound 0 <= I(A:B) <= 2min(H(A),H(B))
+    ensures that mutual information is within bound 0 <= I(A:B) <= 2min(S(A),S(B))
     """
     I_AB = mutual_information(pAB,dim)
     s,_,_,_ = separate(pAB,dim)
     lower = (I_AB >= 0)
-    H_A = vonNeumann(s[0])
-    H_B = vonNeumann(s[1])
-    upper = (I_AB <= 2 * np.minimum(H_A, H_B))
+    S_A = vonNeumann(s[0])
+    S_B = vonNeumann(s[1])
+    upper = (I_AB <= 2 * np.minimum(S_A, S_B))
     return lower and upper
 
 def bound_mutual_information_log(pAB,dim):
@@ -212,23 +178,23 @@ def bound_mutual_information_log(pAB,dim):
 def cond_mutual_information(pAC, pC, pABC, pBC, dim):
     """
     calculates conditional mutual information
-    I(A:B|C) = H(A,C) - H(C) - H(A,B,C) + H(B,C)
+    I(A:B|C) = S(A,C) - S(C) - S(A,B,C) + S(B,C)
     """
 
     # Ensure that system is a 3 qubit/qutrit quantum system
     check_n_q(pABC, dim, 3, "cond_mutual_information in entropy.py")
 
-    H_AC = vonNeumann(pAC)
-    H_C = vonNeumann(pC)
-    H_ABC = vonNeumann(pABC)
-    H_BC = vonNeumann(pBC)
+    S_AC = vonNeumann(pAC)
+    S_C = vonNeumann(pC)
+    S_ABC = vonNeumann(pABC)
+    S_BC = vonNeumann(pBC)
 
-    return H_AC + H_BC - H_C - H_ABC
+    return S_AC + S_BC - S_C - S_ABC
 
 
 def and_mutual_information(pABC,dim):
     """
-    calculates I(A:B,C) = H(A) + H(B,C) - H(A,B,C)
+    calculates I(A:B,C) = S(A) + S(B,C) - S(A,B,C)
     """
 
     # Ensure that system is a 3 qubit/qutrit quantum system
@@ -238,15 +204,15 @@ def and_mutual_information(pABC,dim):
     pA = s[0]
     pBC = j[1]
 
-    H_BC = vonNeumann(pBC)
-    H_A = vonNeumann(pA)
-    H_ABC = vonNeumann(pABC)
+    S_BC = vonNeumann(pBC)
+    S_A = vonNeumann(pA)
+    S_ABC = vonNeumann(pABC)
 
-    return H_A + H_BC - H_ABC
+    return S_A + S_BC - S_ABC
 
 def weak_subadditivity(pAB,dim):
     """
-    Checks that weak subadditivity holds: H(A,B) <= H(A) + H(B)
+    Checks that weak subadditivity holds: S(A,B) <= S(A) + S(B)
     (2 qubit system)
     """
 
@@ -256,16 +222,16 @@ def weak_subadditivity(pAB,dim):
     systems, _, _,_ = separate(pAB,dim)
     pA = systems[0]
     pB = systems[1]
-    H_A = vonNeumann(pA)
-    H_B = vonNeumann(pB)
-    H_AB = vonNeumann(pAB)
+    S_A = vonNeumann(pA)
+    S_B = vonNeumann(pB)
+    S_AB = vonNeumann(pAB)
 
-    return H_AB <= H_A + H_B
+    return S_AB <= S_A + S_B
 
 
 def strong_subadditivity_q(pABC,dim):
     """
-    Checks that strong subadditivity holds: H(A,B,C) + H(B) <= H(A, B)
+    Checks that strong subadditivity holds: S(A,B,C) + S(B) <= S(A, B)
     + H(B,C) (3 qubit system)
     """
 
@@ -277,12 +243,12 @@ def strong_subadditivity_q(pABC,dim):
     pBC = joint_systems[1]
     pB = systems[1]
 
-    H_ABC = vonNeumann(pABC)
-    H_AB = vonNeumann(pAB)
-    H_BC = vonNeumann(pBC)
-    H_B = vonNeumann(pB)
+    S_ABC = vonNeumann(pABC)
+    S_AB = vonNeumann(pAB)
+    S_BC = vonNeumann(pBC)
+    S_B = vonNeumann(pB)
 
-    return H_ABC + H_B <= H_AB + H_BC
+    return S_ABC + S_B <= S_AB + S_BC
 
 def triangle_inequality(pAB,dim):
     """
@@ -295,11 +261,13 @@ def triangle_inequality(pAB,dim):
     systems, _, _,_ = separate(pAB,dim)
     pA = systems[0]
     pB = systems[1]
-    H_A = vonNeumann(pA)
-    H_B = vonNeumann(pB)
-    H_AB = vonNeumann(pAB)
+    S_A = vonNeumann(pA)
+    S_B = vonNeumann(pB)
+    S_AB = vonNeumann(pAB)
 
-    return H_AB >= np.absolute(H_A - H_B)
+    abs = np.absolute(S_A - S_B)
+
+    return (S_AB > abs) or np.isclose(S_AB, abs)
 
 def cond_triangle_inequality(pABC, dim):
     """
@@ -311,39 +279,41 @@ def cond_triangle_inequality(pABC, dim):
 
     systems, joint_systems,_,_ = separate(pABC,dim)
     pBC = joint_systems[1]
-    pAC = joint_systems[2]
+    pAC = joint_systems[1]
     pC = systems[2]
 
-    H_ABC = vonNeumann(pABC)
-    H_AC = vonNeumann(pAC)
-    H_BC = vonNeumann(pBC)
-    H_C = vonNeumann(pC)
+    S_ABC = vonNeumann(pABC)
+    S_AC = vonNeumann(pAC)
+    S_BC = vonNeumann(pBC)
+    S_C = vonNeumann(pC)
 
-    H_AB_C = H_ABC - H_BC
-    H_A_C = H_AC - H_C
-    H_B_C = H_BC - H_C
+    S_AB_C = S_ABC - S_BC
+    S_A_C = S_AC - S_C
+    S_B_C = S_BC - S_C
 
-    return H_AB_C >= H_A_C + H_B_C
+    return S_AB_C >= S_A_C - S_B_C
 
 def cond_reduce_entropy(pABC, dim):
     """
-    Returns true if H(A|BC) <= H(A|B)
+    Returns true if S(A|BC) <= S(A|B)
     """
 
     systems, joint_systems,_,_ = separate(pABC,dim)
     pA = systems[0]
     pB = systems[1]
+    pAB = joint_systems[0]
     pBC = joint_systems[1]
 
-    H_A = vonNeumann(pA)
-    H_B = vonNeumann(pB)
-    h_BC = vonNeumann(pBC)
-    H_ABC = vonNeumann(pABC)
+    S_A = vonNeumann(pA)
+    S_B = vonNeumann(pB)
+    S_AB = vonNeumann(pAB)
+    S_BC = vonNeumann(pBC)
+    S_ABC = vonNeumann(pABC)
 
-    H_A_BC = H_ABC - H_BC
-    H_A_B = H_A - H_B
+    S_A_BC = S_ABC - S_BC
+    S_A_B = S_AB - S_B
 
-    return H_A_BC <= H_A_B
+    return S_A_BC <= S_A_B
 
 
 def mutual_info_not_increase(pABC, dim):
@@ -356,37 +326,42 @@ def mutual_info_not_increase(pABC, dim):
     pAB = joint_systems[0]
     pBC = joint_systems[1]
 
-    H_A = vonNeumann(pA)
-    H_B = vonNeumann(pB)
-    H_AB = vonNeumann(pAB)
-    H_BC = vonNeumann(pBC)
-    H_ABC = vonNeumann(pABC)
+    S_A = vonNeumann(pA)
+    S_B = vonNeumann(pB)
+    S_AB = vonNeumann(pAB)
+    S_BC = vonNeumann(pBC)
+    S_ABC = vonNeumann(pABC)
 
-    H_A_BC = H_A + H_BC - H_ABC
-    H_A_B = H_A + H_B - H_AB
+    S_A_BC = S_A + S_BC - S_ABC
+    S_A_B = S_A + S_B - S_AB
 
-    return H_A_B <= H_A_BC
+    return S_A_B <= S_A_BC
 
 
 def subadditivity_of_cond_1(pABCD, dim):
     """
-    Returns true if H(AB|CD) <= H(A|C) + H(B|D)
+    Returns true if S(AB|CD) <= S(A|C) + S(B|D)
     """
 
-    systems, joint_systems,_,_ = separate(pABC,dim)
+    systems, joint_systems,_,_ = separate(pABCD,dim)
     pC = systems[2]
+    pD = systems[3]
     pAC = joint_systems[2]
     pBD = joint_systems[3]
     pCD = joint_systems[5]
 
-    H_C = vonNeumann(pC)
-    H_AC = vonNeumann(pAC)
-    H_BD = vonNeumann(pBD)
-    H_CD = vonNeumann(pCD)
+    S_C = vonNeumann(pC)
+    S_D = vonNeumann(pD)
+    S_AC = vonNeumann(pAC)
+    S_BD = vonNeumann(pBD)
+    S_CD = vonNeumann(pCD)
+    S_ABCD = vonNeumann(pABCD)
 
-    H_B_C = H_BD - H_C
-    H_A_C = H_AC - H_C
-    H_AB_CD = H_ABCD - H_CD
+    S_B_D = S_BD - S_D
+    S_A_C = S_AC - S_C
+    S_AB_CD = S_ABCD - S_CD
+
+    return S_AB_CD <= S_A_C + S_B_D
 
 
 def subadditivity_of_cond_2(pABC, dim):
@@ -398,16 +373,16 @@ def subadditivity_of_cond_2(pABC, dim):
     pBC = j[1]
     pAC = j[2]
 
-    H_C = vonNeumann(pC)
-    H_BC = vonNeumann(pBC)
-    H_AC= vonNeumann(pAC)
-    H_ABC = vonNeumann(pABC)
+    S_C = vonNeumann(pC)
+    S_BC = vonNeumann(pBC)
+    S_AC= vonNeumann(pAC)
+    S_ABC = vonNeumann(pABC)
 
-    H_B_C = H_BC - H_C
-    H_A_C = H_AC - H_C
-    H_AB_C = H_ABC - H_C
+    S_B_C = S_BC - S_C
+    S_A_C = S_AC - S_C
+    S_AB_C = S_ABC - S_C
 
-    return H_AB_C <= H_A_C + H_B_C
+    return S_AB_C <= S_A_C + S_B_C
 
 
 def subadditivity_of_cond_3(pABC, dim):
@@ -416,20 +391,23 @@ def subadditivity_of_cond_3(pABC, dim):
     """
     s,j,_,_ = separate(pABC, dim)
     pB = s[1]
+    pC = s[2]
     pAB = j[0]
+    pBC = j[1]
     pAC = j[2]
 
-    H_B = vonNeumann(pB)
-    H_AB = vonNeumann(pAB)
-    H_AC= vonNeumann(pAC)
-    H_ABC = vonNeumann(pABC)
+    S_B = vonNeumann(pB)
+    S_C = vonNeumann(pC)
+    S_AB = vonNeumann(pAB)
+    S_BC = vonNeumann(pBC)
+    S_AC = vonNeumann(pAC)
+    S_ABC = vonNeumann(pABC)
 
-    H_A_B = H_AB - H_B
-    H_A_C = H_AC - H_C
-    H_A_BC = H_ABC - H_BC
+    S_A_B = S_AB - S_B
+    S_A_C = S_AC - S_C
+    S_A_BC = S_ABC - S_BC
 
-    return H_A_BC <= H_A_B + H_A_C
-
+    return S_A_BC <= S_A_B + S_A_C
 
 
 def cond_strong_subadditivity(pABCD, dim):
@@ -437,211 +415,21 @@ def cond_strong_subadditivity(pABCD, dim):
     Returns S(ABC|D) + S(B|D) <= S(AB|D) + S(BC|D)
     """
 
-    systems, joint_systems,j3,_ = separate(pABC,dim)
+    systems, joint_systems,j3,_ = separate(pABCD,dim)
     pD = systems[3]
     pBD = joint_systems[3]
     pABD = j3[1]
     pBCD = j3[2]
 
-    H_BCD = vonNeumann(pBCD)
-    H_ABD = vonNeumann(pABD)
-    H_BD = vonNeumann(pBD)
-    H_D = vonNeumann(pD)
-    H_ABCD = vonNeumann(pABCD)
+    S_BCD = vonNeumann(pBCD)
+    S_ABD = vonNeumann(pABD)
+    S_BD = vonNeumann(pBD)
+    S_D = vonNeumann(pD)
+    S_ABCD = vonNeumann(pABCD)
 
-    H_BC_D = H_BCD - H_D
-    H_AB_D = H_ABD - H_D
-    H_B_D = H_BD - H_D
-    H_ABC_D = H_ABCD - H_D
+    S_BC_D = S_BCD - S_D
+    S_AB_D = S_ABD - S_D
+    S_B_D = S_BD - S_D
+    S_ABC_D = S_ABCD - S_D
 
-    return H_ABC_D + H_B_D <= H_AB_D + H_BC_D
-
-
-def bell_states(n):
-    """
-    Returns Bell's states
-    n = 1: Return (|00> + |11>)/sqrt(2)
-    n = 2: Return (|00> - |11>)/sqrt(2)
-    n = 3: Return (|01> + |10>)/sqrt(2)
-    n = 4: Return (|01> - |10>)/sqrt(2)
-    """
-    p = np.zeros((4,4))
-    if(n == 1):
-        p[0,0] = 0.5
-        p[0,3] = 0.5
-        p[3,0] = 0.5
-        p[3,3] = 0.5
-    elif(n == 2):
-        p[0,0] = 0.5
-        p[0,3] = -0.5
-        p[3,0] = -0.5
-        p[3,3] = 0.5
-    elif(n == 3):
-        p[1,1] = 0.5
-        p[1,2] = 0.5
-        p[2,1] = 0.5
-        p[2,2] = 0.5
-    elif(n == 4):
-        p[1,1] = 0.5
-        p[1,2] = -0.5
-        p[2,1] = -0.5
-        p[2,2] = 0.5
-    else:
-        print("Error in function 'bell_states' in entropy.py")
-        print("bell state number given is not valid.")
-        sys.exit()
-    return p
-
-def GHZ_states(M, dim):
-    """
-    Returns GHZ states |u> = 1/sqrt(2) (|0>^M + |1>^M), where M>= 3
-    """
-    if(M < 3):
-        print("Error in function 'GHZ_states' in entropy.py")
-        print("M should be more than or equal to 3")
-        sys.exit()
-
-    n = dim**M
-    p = np.zeros((n,n))
-    p[0,0] = 0.5
-    p[0,n-1] = 0.5
-    p[n-1,0] = 0.5
-    p[n-1,n-1] = 0.5
-
-    return p
-
-
-def is_entangled(pAB, pB):
-    """
-    Returns true if p is entangled in A : B. If H(AB) - H(B) < 0
-    """
-    H_AB = vonNeumann(pAB)
-    H_B = vonNeumann(pB)
-
-    return (H_AB - H_B) < 0
-
-
-def is_bell_state_max_entangled(n):
-    """
-    Returns true if bell states are maximally entangled
-    0 < n <= 4 represents bell states; go to function bell_states in entropy.py
-    """
-    p = bell_states(n)
-    V = vonNeumann(p)
-    if(not np.isclose(V,0)): # Bell states are pure states
-        return False
-
-    s,_,_,_ = separate(p,2)
-
-    # In bell state, separated pA = pB
-    if(not is_entangled(p, s[0])):
-        return False
-
-    # Maximally entangled if H = log d
-    H = vonNeumann(s[0])
-    if(H == np.log2(s[0].shape[0])):
-        return True
-    return False
-
-
-def mixed_entangled_bipartite(gen_func, lim, dim):
-    """
-    Return number of mixed states and number of mixed entangled states out of
-    the n bipartite states generated
-    """
-
-    ent = 0
-    for i in range(lim):
-        p = gen_func(dim**2)
-        s,_,_,_ = separate(p, dim)
-
-        if(is_entangled(p, s[1])): #p and pB
-            ent = ent + 1
-
-    return lim, ent, lim-ent
-
-
-def mixed_entangled_joint(gen_func, size, dim, cut, lim):
-    """
-    size: 3 (tri- partite), 4, 5 partite system
-    Return number of mixed states and number of mixed entangled states out of
-    the lim 3 4 or 5 partite states generated.
-    cut = 1 -> entanglement between pAB|CDE
-    cut = 2 -> entanglement between pABC|DE
-    """
-    ent = 0
-    func = is_entangled_ABC
-    if (size == 4):
-        func = is_entangled_ABCD
-    elif(size == 5):
-        func = is_entangled_5
-    elif(size != 3):
-        print("Error in function 'mixed_entangled_joint' in entropy.py")
-        print("size given is not valid.")
-        sys.exit()
-
-    for i in range(lim):
-        p = gen_func(dim**size)
-        if(func(p, dim, cut)):
-            ent = ent + 1
-
-    return lim, ent, lim-ent
-
-
-
-def is_entangled_ABC(pABC, dim, cut):
-    """
-    Returns true if pABCD is entangled with cut s.t
-    cut 1 - pA|BC : H(ABC) - H(A) < 0
-    cut 2 - pAB|C : H(ABC) - H(AB) < 0
-    """
-    s, j, _,_ = separate(pABC, dim)
-    if(cut == 1):
-        pA = s[0]
-        return is_entangled(pABC, pA)
-    elif(cut == 2):
-        pAB = j[0]
-        return is_entangled(pABC, pAB)
-    else:
-        print("Error in function 'is_entangled_ABC'")
-        print("Cut given is not valid.")
-        sys.exit()
-
-
-def is_entangled_ABCD(pABCD, dim, cut):
-    """
-    Returns true if pABCD is entangled with cut s.t
-    cut 1 - pA|BCD : H(ABCD) - H(A) < 0
-    cut 2 - pAB|CD : H(ABCD) - H(AB) < 0
-    """
-    s, j, j3,_ = separate(pABCD, dim)
-    if(cut == 1):
-        pA = s[0]
-        return is_entangled(pABCD, pA)
-    elif(cut == 2):
-        pAB = j[0]
-        return is_entangled(pABCD, pAB)
-    else:
-        print("Error in function 'is_entangled_ABC'")
-        print("Cut given is not valid.")
-        sys.exit()
-
-
-def is_entangled_5(pABCDE, dim, cut):
-    """
-    Returns true if pABCD is entangled with cut s.t
-    cut 1 - pAB|CDE : H(ABCDE) - H(AB) < 0
-    cut 2 - pABC|DE : H(ABCDE) - H(ABC) < 0
-    """
-    s, j, j3,j4 = separate(pABCDE, dim)
-    if(cut == 1):
-        pA = j[0]
-        return is_entangled(pABCDE, pA)
-    elif(cut == 2):
-        pAB = j3[0]
-        return is_entangled(pABCDE, pAB)
-
-    else:
-        print("Error in function 'is_entangled_ABC' in entropy.py")
-        print("Cut given is not valid.")
-        sys.exit()
+    return S_ABC_D + S_B_D <= S_AB_D + S_BC_D
